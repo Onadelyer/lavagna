@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        NETWORK_NAME = env.JOB_NAME.toLowerCase().replace("/", "_")
+    }
+
     stages {
         stage('Clear environment') {
             steps {
@@ -37,7 +41,7 @@ pipeline {
                         agent {
                             docker {
                                 image 'maven:3.8.6-openjdk-8'
-                                args '--network lavagna'
+                                args "--network ${NETWORK_NAME}"
                             }
                         }
                         steps {
