@@ -19,6 +19,7 @@ pipeline {
 
         stage('Setup test databases'){
             steps{
+                sh "ehco ${JOB_NAME}"
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
@@ -40,7 +41,6 @@ pipeline {
                             }
                         }
                         steps {
-                            sh "ehco ${JOB_NAME}"
                             sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
                         }
                     }
