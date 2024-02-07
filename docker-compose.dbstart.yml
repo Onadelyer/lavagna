@@ -38,4 +38,4 @@ services:
 networks:
   lavagna:
     driver: bridge
-    name: "lavagna"
+    name: lavagna
