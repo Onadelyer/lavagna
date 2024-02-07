@@ -36,10 +36,11 @@ pipeline {
                         agent {
                             docker {
                                 image 'maven:3.8.6-openjdk-8'
-                                args '--network ${env.JOB_NAME}_lavagna'
+                                args '--network lavagna'
                             }
                         }
                         steps {
+                            sh "ehco ${JOB_NAME}"
                             sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
                         }
                     }
