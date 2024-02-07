@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        NETWORK_NAME = env.JOB_NAME.toLowerCase().replace("/", "_") + "_lavagna"
+        NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
     }
 
     stages {
