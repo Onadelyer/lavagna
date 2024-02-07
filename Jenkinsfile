@@ -36,7 +36,7 @@ pipeline {
                         agent {
                             docker {
                                 image 'maven:3.8.6-openjdk-8'
-                                args '--network lavagna'
+                                args "--network ${env.JOB_NAME}_lavagna"
                             }
                         }
                         steps {
