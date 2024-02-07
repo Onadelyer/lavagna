@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
+    }
+
     stages {
         stage('Clear environment') {
             steps {
@@ -19,6 +23,7 @@ pipeline {
 
         stage('Setup test databases'){
             steps{
+                sh "echo ${JOB_NAME}"
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
@@ -36,7 +41,7 @@ pipeline {
                         agent {
                             docker {
                                 image 'maven:3.8.6-openjdk-8'
-                                args '--network lavagna'
+                                args "--network ${NETWORK_NAME}"
                             }
                         }
                         steps {
