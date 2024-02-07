@@ -2,12 +2,12 @@ pipeline {
     agent any
     
     stages {
-        stage('Clear environment') {
-            steps {
-                sh 'chmod +x ./clear-environment.sh'
-                sh './clear-environment.sh'
-            }
-        }
+        // stage('Clear environment') {
+        //     steps {
+        //         sh 'chmod +x ./clear-environment.sh'
+        //         sh './clear-environment.sh'
+        //     }
+        // }
 
         // stage('Build app image'){
         //     steps {
@@ -47,11 +47,11 @@ pipeline {
             }
         }
 
-        stage('Down test databases'){
-            steps{
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
-            }
-        }
+        // stage('Down test databases'){
+        //     steps{
+        //         step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
+        //     }
+        // }
 
 
         // stage('Build HSQLDB') {
