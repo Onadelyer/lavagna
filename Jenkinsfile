@@ -11,7 +11,7 @@ if (env.CHANGE_TARGET == "main") {
 
 
 pipeline {
-    agent { label "${agentLabel} oracle" }
+    agent { label "oracle ${agentLabel}" }
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
