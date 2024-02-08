@@ -45,11 +45,11 @@ pipeline {
                     def testProfiles = []
 
                     if (env.CHANGE_TARGET == 'main') {
-                        matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+                        testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
                     } else if (env.CHANGE_TARGET == 'dev') {
-                        matrixValues = ["HSQLDB"]
+                        testProfiles = ["HSQLDB"]
                     } else if (env.CHANGE_TARGET == 'qa') {
-                        matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+                        testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
                     }
 
                     matrix {
