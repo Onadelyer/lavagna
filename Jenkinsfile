@@ -1,5 +1,17 @@
+def agentLabel
+if (BRANCH_NAME == "dev") {
+    agentLabel = "dev"
+}
+if (BRANCH_NAME == "qa") {
+    agentLabel = "qa"
+}
+if (BRANCH_NAME == "main") {
+    agentLabel = "main"
+}
+
+
 pipeline {
-    agent any
+    agent { label agentLabel }
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
@@ -23,41 +35,53 @@ pipeline {
 
         stage('Setup test databases'){
             steps{
-                sh "echo ${JOB_NAME}"
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
 
         stage("Execute tests") {
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_PROFILE"
-                        values "HSQLDB", "PGSQL", "MYSQL", "MARIADB"
+            steps{
+                script{
+                    def testProfiles = []
+
+                    if (env.BRANCH_NAME == 'main') {
+                        matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+                    } else if (env.BRANCH_NAME == 'dev') {
+                        matrixValues = ["HSQLDB"]
+                    } else if (env.BRANCH_NAME == 'qa') {
+                        matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
                     }
-                }
-                stages {
-                    stage('Test') {
-                        agent {
-                            docker {
-                                image 'maven:3.8.6-openjdk-8'
-                                args "--network ${NETWORK_NAME}"
+
+                    matrix {
+                        axes {
+                            axis {
+                                name "TEST_PROFILE"
+                                values testProfiles
                             }
                         }
-                        steps {
-                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                        stages {
+                            stage('Test') {
+                                agent {
+                                    docker {
+                                        image 'maven:3.8.6-openjdk-8'
+                                        args "--network ${NETWORK_NAME}"
+                                    }
+                                }
+                                steps {
+                                    sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                                }
+                            }
                         }
                     }
                 }
             }
         }
 
-        stage('Down test databases'){
-            steps{
+        post {
+            always {
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
             }
         }
-
 
         // stage('Build HSQLDB') {
         //     agent {
