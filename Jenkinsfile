@@ -77,11 +77,6 @@ pipeline {
             }
         }
 
-        post {
-            always {
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
-            }
-        }
 
         // stage('Build HSQLDB') {
         //     agent {
@@ -134,5 +129,10 @@ pipeline {
         //         sh 'mvn -Ddatasource.dialect=MARIADB -B package --file pom.xml'
         //     }
         // }
+    }
+    post {
+        always {
+            step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
+        }
     }
 }
