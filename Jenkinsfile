@@ -1,11 +1,11 @@
 def agentLabel
-if (env.BRANCH_NAME == "dev") {
+if (env.GIT_BRANCH == "dev") {
     agentLabel = "dev"
 }
-if (env.BRANCH_NAME == "qa") {
+if (env.GIT_BRANCH == "qa") {
     agentLabel = "qa"
 }
-if (env.BRANCH_NAME == "main") {
+if (env.GIT_BRANCH == "main") {
     agentLabel = "main"
 }
 
