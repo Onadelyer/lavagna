@@ -50,8 +50,10 @@ pipeline {
 
         stage("Execute tests") {
             when{
-                environment name: 'CHANGE_TARGET', value: 'main' ||
-                environment name: 'CHANGE_TARGET', value: 'qa'
+                anyOf{
+                    expression{env.CHANGE_TARGET == 'main'}
+                    expression{env.CHANGE_TARGET == 'qa'}
+                }
             }
             matrix {
                 axes {
@@ -78,7 +80,9 @@ pipeline {
 
         stage("Execute tests") {
             when{
-                environment name: 'CHANGE_TARGET', value: 'dev' ||
+                anyOf{
+                    expression{env.CHANGE_TARGET == 'dev'}
+                }
             }
             matrix {
                 axes {
