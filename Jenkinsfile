@@ -29,6 +29,7 @@ pipeline {
     stages {
         stage('Clear environment') {
             steps {
+                sh "echo ${env.NETWORK_NAME}"
                 sh "echo ${env.CHANGE_TARGET}"
                 sh 'chmod +x ./clear-environment.sh'
                 sh './clear-environment.sh'
