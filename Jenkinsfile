@@ -1,17 +1,17 @@
 def agentLabel
-if (GIT_BRANCH == "dev") {
+if (env.BRANCH_NAME == "dev") {
     agentLabel = "dev"
 }
-if (GIT_BRANCH == "qa") {
+if (env.BRANCH_NAME == "qa") {
     agentLabel = "qa"
 }
-if (GIT_BRANCH == "main") {
+if (env.BRANCH_NAME == "main") {
     agentLabel = "main"
 }
 
 
 pipeline {
-    agent { label "${env.GIT_BRANCH} ${agentLabel} oracle" }
+    agent { label "${env.BRANCH_NAME} ${agentLabel} oracle" }
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
