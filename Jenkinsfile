@@ -67,6 +67,7 @@ pipeline {
                     stage('Test') {
                         agent {
                             docker {
+                                label "${agentLabel}"
                                 image 'maven:3.8.6-openjdk-8'
                                 args "--network ${NETWORK_NAME}"
                             }
@@ -96,6 +97,7 @@ pipeline {
                     stage('Test') {
                         agent {
                             docker {
+                                label "${agentLabel}"
                                 image 'maven:3.8.6-openjdk-8'
                                 args "--network ${NETWORK_NAME}"
                             }
