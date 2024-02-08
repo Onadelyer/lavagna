@@ -53,7 +53,11 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values testProfiles.join(",")
+                        values {
+                            script {
+                                return testProfiles.join(",")
+                            }
+                        }
                     }
                 }
                 stages {
