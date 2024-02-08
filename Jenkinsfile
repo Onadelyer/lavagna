@@ -44,11 +44,11 @@ pipeline {
                 script{
                     def testProfiles = []
 
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.CHANGE_TARGET == 'main') {
                         matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-                    } else if (env.BRANCH_NAME == 'dev') {
+                    } else if (env.CHANGE_TARGET == 'dev') {
                         matrixValues = ["HSQLDB"]
-                    } else if (env.BRANCH_NAME == 'qa') {
+                    } else if (env.CHANGE_TARGET == 'qa') {
                         matrixValues = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
                     }
 
