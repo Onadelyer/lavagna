@@ -48,7 +48,7 @@ pipeline {
             }
         }
 
-        stage("Execute tests") {
+        stage("Execute all db tests") {
             when{
                 anyOf{
                     expression{env.CHANGE_TARGET == 'main'}
@@ -78,7 +78,7 @@ pipeline {
             }
         }
 
-        stage("Execute tests") {
+        stage("Execute single db tests") {
             when{
                 anyOf{
                     expression{env.CHANGE_TARGET == 'dev'}
