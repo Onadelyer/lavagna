@@ -9,6 +9,15 @@ if (env.CHANGE_TARGET == "main") {
     agentLabel = "main"
 }
 
+def testProfiles = []
+
+if (env.CHANGE_TARGET == 'main') {
+    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+} else if (env.CHANGE_TARGET == 'dev') {
+    testProfiles = ["HSQLDB"]
+} else if (env.CHANGE_TARGET == 'qa') {
+    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+}
 
 pipeline {
     agent { label "${agentLabel}" }
@@ -41,35 +50,23 @@ pipeline {
 
         stage("Execute tests") {
             steps{
-                script{
-                    def testProfiles = []
-
-                    if (env.CHANGE_TARGET == 'main') {
-                        testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-                    } else if (env.CHANGE_TARGET == 'dev') {
-                        testProfiles = ["HSQLDB"]
-                    } else if (env.CHANGE_TARGET == 'qa') {
-                        testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-                    }
-
-                    matrix {
-                        axes {
-                            axis {
-                                name "TEST_PROFILE"
-                                values testProfiles
-                            }
+                matrix {
+                    axes {
+                        axis {
+                            name "TEST_PROFILE"
+                            values testProfiles
                         }
-                        stages {
-                            stage('Test') {
-                                agent {
-                                    docker {
-                                        image 'maven:3.8.6-openjdk-8'
-                                        args "--network ${NETWORK_NAME}"
-                                    }
+                    }
+                    stages {
+                        stage('Test') {
+                            agent {
+                                docker {
+                                    image 'maven:3.8.6-openjdk-8'
+                                    args "--network ${NETWORK_NAME}"
                                 }
-                                steps {
-                                    sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
-                                }
+                            }
+                            steps {
+                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
                             }
                         }
                     }
