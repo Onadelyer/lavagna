@@ -49,15 +49,17 @@ pipeline {
         }
 
         stage("Execute tests") {
+            when{
+                when{
+                    environment name: 'CHANGE_TARGET', value: 'dev' ||
+                    environment name: 'CHANGE_TARGET', value: 'qa'
+                }
+            }
             matrix {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values {
-                            script {
-                                return testProfiles.join(",")
-                            }
-                        }
+                        values ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
                     }
                 }
                 stages {
@@ -76,6 +78,32 @@ pipeline {
             }
         }
 
+        stage("Execute tests") {
+            when{
+                environment name: 'CHANGE_TARGET', value: 'dev'
+            }
+            matrix {
+                axes {
+                    axis {
+                        name "TEST_PROFILE"
+                        values ["HSQLDB"]
+                    }
+                }
+                stages {
+                    stage('Test') {
+                        agent {
+                            docker {
+                                image 'maven:3.8.6-openjdk-8'
+                                args "--network ${NETWORK_NAME}"
+                            }
+                        }
+                        steps {
+                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                        }
+                    }
+                }
+            }
+        }
 
         // stage('Build HSQLDB') {
         //     agent {
