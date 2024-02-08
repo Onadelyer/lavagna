@@ -50,10 +50,8 @@ pipeline {
 
         stage("Execute tests") {
             when{
-                when{
-                    environment name: 'CHANGE_TARGET', value: 'dev' ||
-                    environment name: 'CHANGE_TARGET', value: 'qa'
-                }
+                environment name: 'CHANGE_TARGET', value: 'main' ||
+                environment name: 'CHANGE_TARGET', value: 'qa'
             }
             matrix {
                 axes {
@@ -80,7 +78,7 @@ pipeline {
 
         stage("Execute tests") {
             when{
-                environment name: 'CHANGE_TARGET', value: 'dev'
+                environment name: 'CHANGE_TARGET', value: 'dev' ||
             }
             matrix {
                 axes {
