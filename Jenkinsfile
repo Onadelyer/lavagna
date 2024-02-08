@@ -1,11 +1,11 @@
 def agentLabel
-if (BRANCH_NAME == "dev") {
+if (env.BRANCH_NAME == "dev") {
     agentLabel = "dev"
 }
-if (BRANCH_NAME == "qa") {
+if (env.BRANCH_NAME == "qa") {
     agentLabel = "qa"
 }
-if (BRANCH_NAME == "main") {
+if (env.BRANCH_NAME == "main") {
     agentLabel = "main"
 }
 
