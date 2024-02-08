@@ -59,7 +59,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
                     }
                 }
                 stages {
@@ -88,7 +88,7 @@ pipeline {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values ["HSQLDB"]
+                        values 'HSQLDB'
                     }
                 }
                 stages {
