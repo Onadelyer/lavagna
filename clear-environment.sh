@@ -12,4 +12,4 @@ if [ -n "$(docker images -q)" ]; then
     docker rmi $(docker images -q) -f
 fi
 
-docker system prune -f
+#docker system prune -f
