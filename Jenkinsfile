@@ -49,25 +49,23 @@ pipeline {
         }
 
         stage("Execute tests") {
-            steps{
-                matrix {
-                    axes {
-                        axis {
-                            name "TEST_PROFILE"
-                            values testProfiles
-                        }
+            matrix {
+                axes {
+                    axis {
+                        name "TEST_PROFILE"
+                        values testProfiles
                     }
-                    stages {
-                        stage('Test') {
-                            agent {
-                                docker {
-                                    image 'maven:3.8.6-openjdk-8'
-                                    args "--network ${NETWORK_NAME}"
-                                }
+                }
+                stages {
+                    stage('Test') {
+                        agent {
+                            docker {
+                                image 'maven:3.8.6-openjdk-8'
+                                args "--network ${NETWORK_NAME}"
                             }
-                            steps {
-                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
-                            }
+                        }
+                        steps {
+                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
                         }
                     }
                 }
