@@ -1,17 +1,17 @@
 def agentLabel
-if (env.BRANCH_NAME == "dev") {
+if (env.CHANGE_TARGET == "dev") {
     agentLabel = "dev"
 }
-if (env.BRANCH_NAME == "qa") {
+if (env.CHANGE_TARGET == "qa") {
     agentLabel = "qa"
 }
-if (env.BRANCH_NAME == "main") {
+if (env.CHANGE_TARGET == "main") {
     agentLabel = "main"
 }
 
 
 pipeline {
-    agent { label "${env.BRANCH_NAME} ${agentLabel} oracle" }
+    agent { label "${env.CHANGE_TARGET} ${agentLabel} oracle" }
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
