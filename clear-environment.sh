@@ -1,15 +1,46 @@
 #!/bin/bash
 
-if [ -n "$(docker ps -q)" ]; then
-    docker stop $(docker ps -aq)
+LOCK_FILE="/tmp/cleanup.lock"
+
+# Check if lock file exists
+if [ -f "$LOCK_FILE" ]; then
+    exit 0
 fi
 
-if [ -n "$(docker ps -aq)" ]; then
-    docker rm $(docker ps -aq)
-fi
+# Create lock file
+touch "$LOCK_FILE"
 
-if [ -n "$(docker images -q)" ]; then
-    docker rmi $(docker images -q) -f
-fi
+# Function to remove lock file on exit
+cleanup() {
+    rm -f "$LOCK_FILE"
+}
 
-#docker system prune -f
+# Trap cleanup function on EXIT signal
+trap cleanup EXIT
+
+stop_all_containers() {
+    running_containers=$(docker ps -q)
+    if [ -n "$running_containers" ]; then
+        docker stop $running_containers
+    fi
+}
+
+remove_all_containers() {
+    all_containers=$(docker ps -aq)
+    if [ -n "$all_containers" ]; then
+        docker rm $all_containers
+    fi
+}
+
+remove_all_images() {
+    all_images=$(docker images -aq)
+    if [ -n "$all_images" ]; then
+        docker rmi $all_images
+    fi
+}
+
+stop_all_containers
+remove_all_containers
+remove_all_images
+
+docker system prune -f
