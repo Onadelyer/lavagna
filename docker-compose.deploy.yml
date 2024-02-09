@@ -16,7 +16,6 @@ services:
     networks:
       - lavagna
 
-
   app-deploy:
     build:
       context: .
