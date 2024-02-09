@@ -10,4 +10,4 @@ WORKDIR /app/target
 
 EXPOSE 8080
 
-CMD ["java", "-Ddatasource.dialect=${DB_DIALECT}", "-Ddatasource.url=${DB_URL}", "-Ddatasource.username=${DB_USERNAME}", "-Ddatasource.password=${DB_PASSWORD}", "-Dspring.profile.active=${SPRING_PROFILES_ACTIVE}", "-jar", "lavagna-jetty-console.war"]
+CMD java -Ddatasource.dialect=$DB_DIALECT -Ddatasource.url=$DB_URL -Ddatasource.username=$DB_USERNAME -Ddatasource.password=$DB_PASSWORD -Dspring.profile.active=$SPRING_PROFILES_ACTIVE -jar lavagna-jetty-console.war
