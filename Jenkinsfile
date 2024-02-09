@@ -137,12 +137,11 @@ pipeline {
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
-
-        post {
-            script {
-                if (isPullRequest == true)
-                    step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
-            }
+    }
+    post {
+        script {
+            if (isPullRequest == true)
+                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
         }
     }
 }
