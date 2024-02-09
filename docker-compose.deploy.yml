@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_DATABASE: lavagna
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - lavagna
+
+  app-deploy:
+    build:
+      context: .
+      dockerfile: Dockerfile.deploy
+    args:
+      DB_DIALECT: MYSQL
+      DB_URL: jdbc:mysql://mysql:3306/lavagna
+      DB_USERNAME: myuser
+      DB_PASSWORD: mypassword
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - lavagna
+
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  lavagna:
+    driver: bridge
