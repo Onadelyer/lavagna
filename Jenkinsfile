@@ -1,16 +1,16 @@
+//change id is not null only if it is a pull request
+def isPullRequest = env.CHANGE_ID != null
+
 def agentLabel
 if (env.CHANGE_TARGET == "dev") {
     agentLabel = "dev"
-}
-if (env.CHANGE_TARGET == "qa") {
+} else if (env.CHANGE_TARGET == "qa") {
     agentLabel = "qa"
-}
-if (env.CHANGE_TARGET == "main") {
+} else if (env.CHANGE_TARGET == "main") {
     agentLabel = "main"
 }
 
 def testProfiles = []
-
 if (env.CHANGE_TARGET == 'main') {
     testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
 } else if (env.CHANGE_TARGET == 'dev') {
@@ -36,15 +36,25 @@ pipeline {
             }
         }
 
-        // stage('Build app image'){
-        //     steps {
-        //         script{
-        //             docker.build("lavagna-build", "-f Dockerfile.build .")
-        //         }
-        //     }
-        // }
+        stage('Build app image'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps {
+                script{
+                    docker.build("lavagna-build", "-f Dockerfile.build .")
+                }
+            }
+        }
 
         stage('Setup test databases'){
+            when{
+                allOf{
+                    expression{isPullRequest == true}
+                }
+            }
             steps{
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
@@ -52,9 +62,12 @@ pipeline {
 
         stage("Execute all db tests") {
             when{
-                anyOf{
-                    expression{env.CHANGE_TARGET == 'main'}
-                    expression{env.CHANGE_TARGET == 'qa'}
+                allOf{
+                    anyOf{
+                        expression{env.CHANGE_TARGET == 'main'}
+                        expression{env.CHANGE_TARGET == 'qa'}
+                    }
+                    expression{isPullRequest == true}
                 }
             }
             matrix {
@@ -83,8 +96,11 @@ pipeline {
 
         stage("Execute single db tests") {
             when{
-                anyOf{
-                    expression{env.CHANGE_TARGET == 'dev'}
+                allOf{
+                    anyOf{
+                        expression{env.CHANGE_TARGET == 'dev'}
+                    }
+                    expression{isPullRequest == true}
                 }
             }
             matrix {
@@ -111,57 +127,9 @@ pipeline {
             }
         }
 
-        // stage('Build HSQLDB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //         }
-        //     }
-        //     steps {
-        //         checkout scm
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=HSQLDB -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build PGSQL 9.4') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=PGSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MYSQL') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MYSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MARIADB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MARIADB -B package --file pom.xml'
-        //     }
-        // }
+        stage('Deploy'){
+            
+        }
     }
     post {
         always {
