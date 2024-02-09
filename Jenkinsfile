@@ -2,11 +2,11 @@
 def isPullRequest = env.CHANGE_ID != null
 
 def agentLabel
-if (env.CHANGE_TARGET == "dev") {
+if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
     agentLabel = "dev"
-} else if (env.CHANGE_TARGET == "qa") {
+} else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
     agentLabel = "qa"
-} else if (env.CHANGE_TARGET == "main") {
+} else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
     agentLabel = "main"
 }
 
