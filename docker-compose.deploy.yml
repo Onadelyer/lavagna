@@ -28,8 +28,6 @@ services:
         SPRING_PROFILES_ACTIVE: dev
     depends_on:
       - mysql
-    env_file:
-      - .env
     ports:
       - "8080:8080"
     networks:
