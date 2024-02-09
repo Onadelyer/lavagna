@@ -42,3 +42,5 @@ remove_all_images() {
 stop_all_containers
 remove_all_containers
 remove_all_images
+
+docker system prune -f
