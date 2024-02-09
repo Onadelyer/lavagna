@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgresql:
-    image: mysql:latest
+    image: postgres:9.4
     restart: always
     environment:
       POSTGRES_DB: lavagna
@@ -11,7 +11,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - lavagna
 
