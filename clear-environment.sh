@@ -1,5 +1,23 @@
 #!/bin/bash
 
+LOCK_FILE="/tmp/cleanup.lock"
+
+# Check if lock file exists
+if [ -f "$LOCK_FILE" ]; then
+    exit 0
+fi
+
+# Create lock file
+touch "$LOCK_FILE"
+
+# Function to remove lock file on exit
+cleanup() {
+    rm -f "$LOCK_FILE"
+}
+
+# Trap cleanup function on EXIT signal
+trap cleanup EXIT
+
 stop_all_containers() {
     running_containers=$(docker ps -q)
     if [ -n "$running_containers" ]; then
