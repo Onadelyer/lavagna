@@ -1,14 +1,13 @@
 version: '3.8'
 
 services:
-  mysql:
+  postgresql:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mypassword
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
-      MYSQL_DATABASE: lavagna
+      POSTGRES_DB: lavagna
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
       - "3306:3306"
     volumes:
@@ -21,13 +20,13 @@ services:
       context: .
       dockerfile: Dockerfile.deploy
       args:
-        DB_DIALECT: MYSQL
-        DB_URL: jdbc:mysql://mysql:3306/lavagna
+        DB_DIALECT: PGSQL
+        DB_URL: jdbc:postgresql://postgresql:5432/lavagna
         DB_USERNAME: myuser
         DB_PASSWORD: mypassword
         SPRING_PROFILES_ACTIVE: dev
     depends_on:
-      - mysql
+      - postgresql
     ports:
       - "8080:8080"
     networks:
