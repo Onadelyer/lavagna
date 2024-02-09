@@ -128,7 +128,14 @@ pipeline {
         }
 
         stage('Deploy'){
-            
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps{
+                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+            }
         }
     }
     post {
