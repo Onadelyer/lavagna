@@ -32,7 +32,6 @@ services:
     networks:
       - lavagna
 
-
 volumes:
   postgres-data:
     driver: local
@@ -40,3 +39,5 @@ volumes:
 networks:
   lavagna:
     driver: bridge
+
+project_name: lavagna_deploy
