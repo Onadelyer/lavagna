@@ -27,6 +27,7 @@ pipeline {
     }
 
     stages {
+        
         stage('Build app image'){
             when{
                 allOf{
