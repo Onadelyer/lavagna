@@ -118,6 +118,19 @@ pipeline {
             }
         }
 
+        stage('Stop previous deployment'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps{
+                script {
+                    sh 'docker-compose -f docker-compose.deploy.yml down'
+                }
+            }
+        }
+
         stage('Deploy'){
             when{
                 allOf{
@@ -136,7 +149,7 @@ pipeline {
         always {
             script {
                 if (isPullRequest == true) {
-                    sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
+                    sh 'docker-compose -f docker-compose.dbstart.yml down -v'
                 }
             }
         }
