@@ -36,7 +36,7 @@ pipeline {
             }
             steps {
                 script{
-                    docker.build("lavagna-build", "-f Dockerfile.build .")
+                    docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
                 }
             }
         }
@@ -119,16 +119,20 @@ pipeline {
             }
         }
 
-        // stage('Deploy'){
-        //     when{
-        //         allOf{
-        //             expression{isPullRequest == false}
-        //         }
-        //     }
-        //     steps{
-        //         step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
-        //     }
-        // }
+        stage('Deploy'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps{
+                script {
+                    // Замена строки FROM в Dockerfile перед сборкой
+                    sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
+                }
+                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+            }
+        }
     }
     // post {
     //     always {

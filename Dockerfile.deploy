@@ -1,3 +1,4 @@
+#it will be replaced with lavagna-build:${BUILD_NUMBER} in the Jenkinsfile
 FROM lavagna-build
 
 ARG DB_DIALECT
