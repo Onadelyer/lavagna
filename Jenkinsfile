@@ -135,7 +135,9 @@ pipeline {
     post {
         always {
             script {
-                sh 'docker-compose -f docker-compose.dbstart.yml -p lavagna_deploy down -v --remove-orphans'
+                if (isPullRequest == true) {
+                    sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
+                }
             }
         }
     }

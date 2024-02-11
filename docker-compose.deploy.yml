@@ -39,5 +39,3 @@ volumes:
 networks:
   lavagna:
     driver: bridge
-
-project_name: lavagna_deploy
