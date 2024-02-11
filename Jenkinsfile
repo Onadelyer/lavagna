@@ -126,18 +126,17 @@ pipeline {
             }
             steps{
                 script {
-                    // Замена строки FROM в Dockerfile перед сборкой
                     sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
                 }
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
     }
-    // post {
-    //     always {
-    //         script {
-    //             sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
-    //         }
-    //     }
-    // }
+    post {
+        always {
+            script {
+                sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
+            }
+        }
+    }
 }
