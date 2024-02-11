@@ -11,7 +11,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - .postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - lavagna
 
@@ -34,7 +34,7 @@ services:
 
 
 volumes:
-  mysql_data:
+  postgres-data:
     driver: local
 
 networks:
