@@ -130,11 +130,11 @@ pipeline {
         //     }
         // }
     }
-    post {
-        always {
-            script {
-                sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
-            }
-        }
-    }
+    // post {
+    //     always {
+    //         script {
+    //             sh 'docker-compose -f docker-compose.dbstart.yml down -v --remove-orphans'
+    //         }
+    //     }
+    // }
 }
