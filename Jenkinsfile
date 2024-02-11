@@ -27,7 +27,7 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Build app image'){
             when{
                 allOf{
@@ -119,16 +119,16 @@ pipeline {
             }
         }
 
-        stage('Deploy'){
-            when{
-                allOf{
-                    expression{isPullRequest == false}
-                }
-            }
-            steps{
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
-            }
-        }
+        // stage('Deploy'){
+        //     when{
+        //         allOf{
+        //             expression{isPullRequest == false}
+        //         }
+        //     }
+        //     steps{
+        //         step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+        //     }
+        // }
     }
     post {
         always {
