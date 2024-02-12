@@ -1,4 +1,4 @@
-FROM 10.26.0.176:5000/maven:3.8.6-openjdk-8 AS build
+FROM maven:3.8.6-openjdk-8 AS build
 WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
@@ -7,6 +7,6 @@ COPY src src
 RUN mvn package -DskipTests
 
 
-FROM 10.26.0.176:5000/openjdk:8-jdk-alpine
+FROM openjdk:8-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/lavagna-jetty-console.war lavagna-jetty-console.war
