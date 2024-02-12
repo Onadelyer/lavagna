@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgresql:
-    image: postgres:9.4
+    image: 10.26.0.176:5000/postgres:9.4
     restart: always
     environment:
       POSTGRES_DB: lavagna

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgresql:
-    image: postgres:9.4
+    image: 10.26.0.176:5000/postgres:9.4
     environment:
       POSTGRES_DB: lavagna
       POSTGRES_USER: postgres
@@ -11,7 +11,7 @@ services:
       - lavagna
 
   mysql:
-    image: mysql:latest
+    image: 10.26.0.176:5000/mysql:latest
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: lavagna
@@ -20,14 +20,13 @@ services:
       - lavagna
 
   mariadb:
-    image: mariadb:10.1
+    image: 10.26.0.176:5000/mariadb:10.1
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: lavagna
       MYSQL_PASSWORD: password
     networks:
       - lavagna
-
 
 networks:
   lavagna:
