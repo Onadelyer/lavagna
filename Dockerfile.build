@@ -1,12 +1,11 @@
-FROM maven:3.8.6-openjdk-8 AS build
+FROM ubuntu:latest
+# Install any needed packages specified in requirements.txt
+RUN apt-get update && apt-get install -y maven openjdk-8-jdk
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
 
-COPY src src
-RUN mvn package -DskipTests
+COPY . /app
 
-
-FROM openjdk:8-jdk-alpine
-WORKDIR /app
-COPY --from=build /app/target/lavagna-jetty-console.war lavagna-jetty-console.war
+RUN set -e && mvn package -DskipTests
