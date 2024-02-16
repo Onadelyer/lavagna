@@ -33,18 +33,9 @@ pipeline {
                     expression{isPullRequest == false}
                 }
             }
-            def secrets = [
-                [path: 'secrets/creds/lavagna-secret-text', secretValues: [
-                    [envVar: 'testUser', vaultKey: 'DB_USER'],
-                    [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
-                ]
-            ]
             steps {
-
-                withVault([vaultSecrets: secrets]) {
-                    println("VAULT TEST 2")
-                    sh 'echo $testUser'
-                    sh 'echo $testPassword'
+                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME')]) {
+                    sh 'echo "DB_NAME=${DB_NAME}"'
                 }
                 script{
                     docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
