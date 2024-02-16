@@ -141,8 +141,17 @@ pipeline {
                 script {
                     sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
                 }
-                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_URL'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'SPRING_PROFILES_ACTIVE')]) {
-                    sh 'echo "DB_NAME=${DB_NAME}"'
+                def secrets = [
+                    [path: 'v1/ci/kv/maven/test', secretValues: [
+                        [envVar: 'testUser', vaultKey: 'DB_USER'],
+                        [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
+                    ]
+                ]
+
+                withVault([vaultSecrets: secrets]) {
+                    println("VAULT TEST 2")
+                    sh 'echo $testUser'
+                    sh 'echo $testPassword'
                 }
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
