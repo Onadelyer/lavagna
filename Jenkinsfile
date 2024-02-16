@@ -33,13 +33,13 @@ pipeline {
                     expression{isPullRequest == false}
                 }
             }
-            steps {
-                def secrets = [
-                    [path: 'secrets/creds/lavagna-secret-text', secretValues: [
-                        [envVar: 'testUser', vaultKey: 'DB_USER'],
-                        [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
-                    ]
+            def secrets = [
+                [path: 'secrets/creds/lavagna-secret-text', secretValues: [
+                    [envVar: 'testUser', vaultKey: 'DB_USER'],
+                    [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
                 ]
+            ]
+            steps {
 
                 withVault([vaultSecrets: secrets]) {
                     println("VAULT TEST 2")
