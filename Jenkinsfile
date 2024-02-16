@@ -34,9 +34,6 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME')]) {
-                    sh 'echo "DB_NAME=${DB_NAME}"'
-                }
                 script{
                     docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
                 }
@@ -144,8 +141,9 @@ pipeline {
                 script {
                     sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
                 }
-                
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_URL'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'SPRING_PROFILES_ACTIVE')]) {
+                    step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+                }
             }
         }
     }
