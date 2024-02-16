@@ -34,6 +34,18 @@ pipeline {
                 }
             }
             steps {
+                def secrets = [
+                    [path: 'secrets/creds/lavagna-secret-text', secretValues: [
+                        [envVar: 'testUser', vaultKey: 'DB_USER'],
+                        [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
+                    ]
+                ]
+
+                withVault([vaultSecrets: secrets]) {
+                    println("VAULT TEST 2")
+                    sh 'echo $testUser'
+                    sh 'echo $testPassword'
+                }
                 script{
                     docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
                 }
@@ -141,18 +153,7 @@ pipeline {
                 script {
                     sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
                 }
-                def secrets = [
-                    [path: 'v1/ci/kv/maven/test', secretValues: [
-                        [envVar: 'testUser', vaultKey: 'DB_USER'],
-                        [envVar: 'testPassword', vaultKey: 'DB_PASSWORD']]
-                    ]
-                ]
-
-                withVault([vaultSecrets: secrets]) {
-                    println("VAULT TEST 2")
-                    sh 'echo $testUser'
-                    sh 'echo $testPassword'
-                }
+                
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
