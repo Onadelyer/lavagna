@@ -12,7 +12,7 @@ ENV POSTGRES_USER=${POSTGRES_USER}
 ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 ENV POSTGRES_DBNAME=${POSTGRES_DBNAME}
 
-COPY postgres.yaml /etc/datadog-agent/conf.d/postgres.d/conf.yaml
+COPY pgsql-datadog-db-configuration /etc/datadog-agent/conf.d/postgres.d/conf.yaml
 
 RUN sed -i "s/%%POSTGRES_HOST%%/${POSTGRES_HOST}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_PORT%%/${POSTGRES_PORT}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
