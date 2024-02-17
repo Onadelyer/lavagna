@@ -45,9 +45,8 @@ services:
         POSTGRES_USER: "datadog"
         POSTGRES_PASSWORD: "datadog"
         POSTGRES_DBNAME: "${DB_NAME}"
-    environment:
-      DD_API_KEY: "${DATADOG_API_KEY}"
-      DD_SITE: "${DATADOG_SITE}"
+        DD_API_KEY: "${DATADOG_API_KEY}"
+        DD_SITE: "${DATADOG_SITE}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc/:/host/proc/:ro
