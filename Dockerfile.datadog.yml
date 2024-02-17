@@ -20,6 +20,6 @@ RUN sed -i "s/%%POSTGRES_HOST%%/${POSTGRES_HOST}/g" /etc/datadog-agent/conf.d/po
     sed -i "s/%%POSTGRES_PASSWORD%%/${POSTGRES_PASSWORD}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_DBNAME%%/${POSTGRES_DBNAME}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml
 
-USER root
-RUN chown dd-agent:dd-agent /etc/datadog-agent/conf.d/postgres.d/conf.yaml
-USER dd-agent
+# USER root
+# RUN chown dd-agent:dd-agent /etc/datadog-agent/conf.d/postgres.d/conf.yaml
+# USER dd-agent
