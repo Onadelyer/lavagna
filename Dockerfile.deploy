@@ -1,5 +1,5 @@
 #it will be replaced with lavagna-build:${BUILD_NUMBER} in the Jenkinsfile
-FROM lavagna-build
+FROM 10.26.0.176:5000/ubuntu:latest
 
 ARG DB_DIALECT
 ARG DB_URL
@@ -22,6 +22,8 @@ RUN echo "DB_URL: $DB_URL"
 RUN echo "DB_USERNAME: $DB_USERNAME"
 RUN echo "DB_PASSWORD: $DB_PASSWORD"
 RUN echo "SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE"
+
+RUN printenv
 
 #CMD java -Ddatasource.dialect=${DB_DIALECT} -Ddatasource.url=${DB_URL} -Ddatasource.username=${DB_USERNAME} -Ddatasource.password=${DB_PASSWORD} -Dspring.profile.active=${SPRING_PROFILES_ACTIVE} -jar lavagna-jetty-console.war
 #CMD ["java", "-Ddatasource.dialect=", $DB_DIALECT, "-Ddatasource.url=", $DB_URL, "-Ddatasource.username=", $DB_USERNAME, "-Ddatasource.password=", $DB_PASSWORD, "-Dspring.profile.active=", $SPRING_PROFILES_ACTIVE, "-jar", "lavagna-jetty-console.war"]
