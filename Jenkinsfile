@@ -148,6 +148,14 @@ pipeline {
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), 
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
+                    script {
+                        // Проверяем, установлены ли переменные окружения
+                        if (env.DB_URL && env.DB_NAME && env.DB_USER && env.DB_PASSWORD && env.DB_DIALECT && env.DATADOG_API_KEY && env.DATADOG_SITE) {
+                            echo "Credentials have been successfully injected"
+                        } else {
+                            echo "Some credentials are missing"
+                        }
+                    }
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
