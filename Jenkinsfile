@@ -148,6 +148,14 @@ pipeline {
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), 
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
+                    sh "export DB_URL='${DB_URL}'"
+                    sh "export DB_NAME='${DB_NAME}'"
+                    sh "export DB_USER='${DB_USER}'"
+                    sh "export DB_PASSWORD='${DB_PASSWORD}'"
+                    sh "export DB_DIALECT='${DB_DIALECT}'"
+                    sh "export DATADOG_API_KEY='${DATADOG_API_KEY}'"
+                    sh "export DATADOG_SITE='${DATADOG_SITE}'"
+
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
