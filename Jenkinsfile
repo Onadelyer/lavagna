@@ -13,10 +13,10 @@ if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
 def testProfiles = []
 if (env.CHANGE_TARGET == 'main') {
     testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-} else if (env.CHANGE_TARGET == 'dev') {
-    testProfiles = ["HSQLDB"]
 } else if (env.CHANGE_TARGET == 'qa') {
     testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+} else if (env.CHANGE_TARGET == 'dev') {
+    testProfiles = ["HSQLDB"]
 }
 
 pipeline {
@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Setup test databases'){
+        stage('Up test db services'){
             when{
                 allOf{
                     expression{isPullRequest == true}
@@ -51,7 +51,7 @@ pipeline {
             }
         }
 
-        stage("Execute all db tests") {
+        stage("All db tests") {
             when{
                 allOf{
                     anyOf{
@@ -85,7 +85,7 @@ pipeline {
             }
         }
 
-        stage("Execute single db tests") {
+        stage("Single db test") {
             when{
                 allOf{
                     anyOf{
@@ -118,7 +118,7 @@ pipeline {
             }
         }
 
-        stage('Stop previous deployment'){
+        stage('Down previous deployment'){
             when{
                 allOf{
                     expression{isPullRequest == false}
@@ -141,7 +141,13 @@ pipeline {
                 script {
                     sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
                 }
-                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_URL'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), vaultString(credentialsId: 'lavagna-secret-text', variable: 'SPRING_PROFILES_ACTIVE')]) {
+                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_URL'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), 
+                                 vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
+                                 vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
