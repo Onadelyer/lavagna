@@ -43,7 +43,7 @@ pipeline {
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     sh "printenv"
 
-                    //step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+                    step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
         }
@@ -171,12 +171,12 @@ pipeline {
         // }
     }
     post {
-        always {
-            script {
-                if (isPullRequest == true) {
-                    sh 'docker-compose -f docker-compose.dbstart.yml down -v'
-                }
-            }
-        }
-    }
+    //     always {
+    //         script {
+    //             if (isPullRequest == true) {
+    //                 sh 'docker-compose -f docker-compose.dbstart.yml down -v'
+    //             }
+    //         }
+    //     }
+    // }
 }
