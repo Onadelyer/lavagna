@@ -170,7 +170,7 @@ pipeline {
         //     }
         // }
     }
-    post {
+    // post {
     //     always {
     //         script {
     //             if (isPullRequest == true) {
