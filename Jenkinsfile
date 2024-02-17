@@ -156,6 +156,8 @@ pipeline {
                     sh "export DATADOG_API_KEY='${DATADOG_API_KEY}'"
                     sh "export DATADOG_SITE='${DATADOG_SITE}'"
 
+                    sh "echo DB_URL='${DB_URL}'"
+
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
