@@ -43,6 +43,7 @@ pipeline {
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     script {
                         echo "DB_URL=${DB_URL} > .env"
+                        echo "cat .env"
                     }
                     //step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
