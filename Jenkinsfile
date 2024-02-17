@@ -34,6 +34,18 @@ pipeline {
                 }
             }
             steps {
+                withCredentials([vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_URL'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_NAME'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), 
+                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), 
+                                 vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
+                                 vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
+                    script {
+                        echo "DB_URL=${DB_URL}" > .env
+                    }
+                    //step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+                }
                 script{
                     docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
                 }
