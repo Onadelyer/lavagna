@@ -150,10 +150,16 @@ pipeline {
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     script {
                         // Проверяем, установлены ли переменные окружения
-                        if (env.DB_URL && env.DB_NAME && env.DB_USER && env.DB_PASSWORD && env.DB_DIALECT && env.DATADOG_API_KEY && env.DATADOG_SITE) {
+                        if (env.DB_URL?.trim() && !env.DB_URL.trim().isEmpty() && 
+                            env.DB_NAME?.trim() && !env.DB_NAME.trim().isEmpty() && 
+                            env.DB_USER?.trim() && !env.DB_USER.trim().isEmpty() && 
+                            env.DB_PASSWORD?.trim() && !env.DB_PASSWORD.trim().isEmpty() && 
+                            env.DB_DIALECT?.trim() && !env.DB_DIALECT.trim().isEmpty() && 
+                            env.DATADOG_API_KEY?.trim() && !env.DATADOG_API_KEY.trim().isEmpty() && 
+                            env.DATADOG_SITE?.trim() && !env.DATADOG_SITE.trim().isEmpty()) {
                             echo "Credentials have been successfully injected"
                         } else {
-                            echo "Some credentials are missing"
+                            echo "Some credentials are missing or empty"
                         }
                     }
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
