@@ -5,8 +5,8 @@ services:
     image: 10.26.0.176:5000/postgres:9.4
     restart: always
     environment:
-      POSTGRES_DB: '${DB_NAME}'
-      POSTGRES_USER: '${DB_USER}'
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile.deploy
       args:
-        DB_DIALECT: '${DB_DIALECT}'
+        DB_DIALECT: ${DB_DIALECT}
         DB_URL: ${DB_URL}
         DB_USERNAME: ${DB_USER} 
         DB_PASSWORD: ${DB_PASSWORD}
