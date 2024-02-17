@@ -18,6 +18,8 @@ ENV DD_SITE=${DD_SITE}
 
 COPY postgres-datadog.conf.yaml /etc/datadog-agent/conf.d/postgres.d/conf.yaml
 
+RUN echo $DD_API_KEY
+
 RUN sed -i "s/%%POSTGRES_HOST%%/${POSTGRES_HOST}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_PORT%%/${POSTGRES_PORT}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_USER%%/${POSTGRES_USER}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
