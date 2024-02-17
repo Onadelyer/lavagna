@@ -43,10 +43,7 @@ pipeline {
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     sh "printenv"
 
-                    step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
-                }
-                script{
-                    docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
+                    //step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
         }
