@@ -1,13 +1,13 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgresql:
     image: 10.26.0.176:5000/postgres:9.4
     restart: always
     environment:
-      POSTGRES_DB: '${DB_NAME}''
-      POSTGRES_USER: '${DB_USER}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
     ports:
       - "5432:5432"
     volumes:
@@ -20,11 +20,11 @@ services:
       context: .
       dockerfile: Dockerfile.deploy
       args:
-        DB_DIALECT: '${DB_DIALECT}'
-        DB_URL: '${DB_URL}'
-        DB_USERNAME: '${DB_USER}'
-        DB_PASSWORD: '${DB_PASSWORD}'
-        SPRING_PROFILES_ACTIVE: '${SPRING_PROFILES_ACTIVE}'
+        DB_DIALECT: "${DB_DIALECT}"
+        DB_URL: "${DB_URL}"
+        DB_USERNAME: "${DB_USER}"
+        DB_PASSWORD: "${DB_PASSWORD}"
+        SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE}"
     depends_on:
       - postgresql
     ports:
