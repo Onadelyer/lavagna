@@ -39,6 +39,7 @@ services:
     build: datadog
     pid: host
     environment:
+     - DD_HOSTNAME=lavagna-app
      - DD_API_KEY=${DATADOG_API_KEY}
      - DD_SITE=${DATADOG_SITE}
      - DD_LOGS_ENABLED=true
