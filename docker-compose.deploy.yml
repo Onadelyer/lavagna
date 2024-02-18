@@ -47,6 +47,8 @@ services:
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - lavagna
 
 volumes:
   postgres-data:
