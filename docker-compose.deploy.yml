@@ -1,32 +1,59 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  # postgresql:
-  #   image: 10.26.0.176:5000/postgres:9.4
-  #   restart: always
-  #   environment:
-  #     POSTGRES_DB: "${DB_NAME}"
-  #     POSTGRES_USER: "${DB_USER}"
-  #     POSTGRES_PASSWORD: "${DB_PASSWORD}"
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres-data:/var/lib/postgresql/data
-  #   networks:
-  #     - lavagna
+  postgresql:
+    container_name: lavagna-db
+    image: 10.26.0.176:5000/postgres:9.4
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-datadog-db.conf.sql:/docker-entrypoint-initdb.d/postgres-datadog-db.conf.sql
+    networks:
+      - lavagna
 
-  app-deploy:
+  app:
+    container_name: lavagna-app
     build:
       context: .
       dockerfile: Dockerfile.deploy
       args:
         DB_DIALECT: "${DB_DIALECT}"
         DB_URL: "${DB_URL}"
-        DB_USERNAME: "${DB_USER}"
+        DB_USERNAME: "${DB_USER} "
         DB_PASSWORD: "${DB_PASSWORD}"
         SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE}"
+    depends_on:
+      - postgresql
     ports:
       - "8080:8080"
+    networks:
+      - lavagna
+
+  datadog-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.datadog.yml
+      args:
+        POSTGRES_HOST: lavagna-db
+        POSTGRES_PORT: "5432"
+        POSTGRES_USER: "datadog"
+        POSTGRES_PASSWORD: "datadog"
+        POSTGRES_DBNAME: "${DB_NAME}"
+    environment:
+      DD_API_KEY: "${DATADOG_API_KEY}"
+      DD_SITE: "${DATADOG_SITE}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    depends_on:
+      - app
     networks:
       - lavagna
 
