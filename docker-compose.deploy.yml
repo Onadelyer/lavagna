@@ -37,7 +37,7 @@ services:
 
   datadog:
     build: 
-      context: .
+      context: ./datadog
       dockerfile: Dockerfile
       args:
         - POSTGRES_HOST=lavagna-app
