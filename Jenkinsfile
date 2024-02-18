@@ -126,7 +126,7 @@ pipeline {
             }
             steps{
                 script {
-                    sh 'docker-compose -f docker-compose.deploy.yml down'
+                    sh 'docker-compose -f docker-compose.deploy.yml rm'
                 }
             }
         }
