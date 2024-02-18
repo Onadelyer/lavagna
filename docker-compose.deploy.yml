@@ -36,13 +36,19 @@ services:
       - lavagna
 
   datadog:
-    build: datadog
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - POSTGRES_HOST=lavagna-app
+        - POSTGRES_PORT=5432
+        - POSTGRES_USER=${DB_USER}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
     pid: host
     environment:
-     - DD_HOSTNAME=lavagna-app
-     - DD_API_KEY=${DATADOG_API_KEY}
-     - DD_SITE=${DATADOG_SITE}
-     - DD_LOGS_ENABLED=true
+      - DD_SITE=${DATADOG_SITE}
+      - DD_API_KEY=${DATADOG_API_KEY}
+      - DD_LOGS_ENABLED=true
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
