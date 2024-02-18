@@ -35,27 +35,6 @@ services:
     networks:
       - lavagna
 
-  datadog-agent:
-    build:
-      context: .
-      dockerfile: Dockerfile.datadog.yml
-      args:
-        POSTGRES_HOST: postgresql
-        POSTGRES_PORT: "5432"
-        POSTGRES_USER: "datadog"
-        POSTGRES_PASSWORD: "datadog"
-    environment:
-      DD_API_KEY: "${DATADOG_API_KEY}"
-      DD_SITE: "${DATADOG_SITE}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-    depends_on:
-      - app
-    networks:
-      - lavagna
-
     datadog:
       image: datadog/agent:latest
       environment:
