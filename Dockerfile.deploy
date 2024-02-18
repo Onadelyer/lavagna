@@ -17,14 +17,6 @@ WORKDIR /app/target
 
 EXPOSE 8080
 
-RUN echo "DB_DIALECT: $DB_DIALECT"
-RUN echo "DB_URL: $DB_URL"
-RUN echo "DB_USERNAME: $DB_USERNAME"
-RUN echo "DB_PASSWORD: $DB_PASSWORD"
-RUN echo "SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE"
-
-RUN printenv
-
 #CMD java -Ddatasource.dialect=${DB_DIALECT} -Ddatasource.url=${DB_URL} -Ddatasource.username=${DB_USERNAME} -Ddatasource.password=${DB_PASSWORD} -Dspring.profile.active=${SPRING_PROFILES_ACTIVE} -jar lavagna-jetty-console.war
 #CMD ["java", "-Ddatasource.dialect=", $DB_DIALECT, "-Ddatasource.url=", $DB_URL, "-Ddatasource.username=", $DB_USERNAME, "-Ddatasource.password=", $DB_PASSWORD, "-Dspring.profile.active=", $SPRING_PROFILES_ACTIVE, "-jar", "lavagna-jetty-console.war"]
 CMD ["sh", "-c", "java -Ddatasource.dialect=$DB_DIALECT -Ddatasource.url=$DB_URL -Ddatasource.username=$DB_USERNAME -Ddatasource.password=$DB_PASSWORD -Dspring.profile.active=$SPRING_PROFILES_ACTIVE -jar lavagna-jetty-console.war"]
