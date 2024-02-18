@@ -36,32 +36,17 @@ services:
       - lavagna
 
   datadog:
-    image: datadog/agent:latest
+    build: datadog
+    pid: host
     environment:
-      DD_API_KEY: "${DATADOG_API_KEY}"
-      DD_SITE: "${DATADOG_SITE}"
-      DD_LOGS_ENABLED: "true"
-      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: "true"
-      DD_APM_ENABLED: "true"
-      DD_PROCESS_AGENT_ENABLED: "true"
-      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
-      # PostgreSQL integration settings
-      DD_PGSQL_HOST: "lavagna-db"
-      DD_PGSQL_PORT: 5432
-      DD_PGSQL_USER: "datadog"
-      DD_PGSQL_PASS: "datadog"
-      DD_PGSQL_DBNAME: "${DB_NAME}"
-      DD_PGSQL_MAX_CONNECTIONS: "5"
-      DD_PGSQL_MAX_CUSTOM_QUERIES: "5"
-      DD_PGSQL_MIN_COLLECTION_INTERVAL: "10"
+     - DD_API_KEY=${DATADOG_API_KEY}
+     - DD_SITE=${DATADOG_SITE}
+     - DD_LOGS_ENABLED=true
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-    depends_on:
-      - postgres
-    networks:
-      - datadog_network
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+     - /var/lib/docker/containers:/var/lib/docker/containers:ro
 
 volumes:
   postgres-data:

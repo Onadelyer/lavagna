@@ -1,21 +1,13 @@
-FROM gcr.io/datadoghq/agent:7
+FROM gcr.io/datadoghq/agent:latest
 
 ARG POSTGRES_HOST
 ARG POSTGRES_PORT
 ARG POSTGRES_USER
 ARG POSTGRES_PASSWORD
-ARG POSTGRES_DBNAME
-ARG DD_API_KEY
-ARG DD_SITE
 
-COPY postgres-datadog.conf.yaml /etc/datadog-agent/conf.d/postgres.d/conf.yaml
+COPY conf.d/postgres-datadog.conf.yaml /etc/datadog-agent/conf.d/postgres.d/conf.yaml
 
 RUN sed -i "s/%%POSTGRES_HOST%%/${POSTGRES_HOST}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_PORT%%/${POSTGRES_PORT}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_USER%%/${POSTGRES_USER}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
     sed -i "s/%%POSTGRES_PASSWORD%%/${POSTGRES_PASSWORD}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml && \
-    sed -i "s/%%POSTGRES_DBNAME%%/${POSTGRES_DBNAME}/g" /etc/datadog-agent/conf.d/postgres.d/conf.yaml
-
-# USER root
-# RUN chown dd-agent:dd-agent /etc/datadog-agent/conf.d/postgres.d/conf.yaml
-# USER dd-agent
