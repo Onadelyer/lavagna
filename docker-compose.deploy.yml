@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./postgres-datadog-db.conf.sql:/docker-entrypoint-initdb.d/postgres-datadog-db.conf.sql
+      - ./conf.sql:/docker-entrypoint-initdb.d
     networks:
       - lavagna
 
