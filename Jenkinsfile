@@ -149,6 +149,7 @@ pipeline {
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'SPRING_PROFILES_ACTIVE'), 
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
+                    sh "printenv"
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
