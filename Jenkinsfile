@@ -146,6 +146,15 @@ pipeline {
                 vaultSecrets: [
                 [path: 'secrets/creds/lavagna-secret-text', secretValues: [[vaultKey: 'DB_URL'], [vaultKey: 'DB_NAME'], [vaultKey: 'DB_USER'], [vaultKey: 'DB_PASSWORD'], [vaultKey: 'DB_DIALECT']]], 
                 [path: 'secrets/creds/datadog-credentials', secretValues: [[vaultKey: 'DATADOG_API_KEY'], [vaultKey: 'DATADOG_SITE']]]]) {
+                    
+                    sh 'echo "DB_URL=${DB_URL}" > .env'
+                    sh 'echo "DB_NAME=${DB_NAME}" >> .env'
+                    sh 'echo "DB_USER=${DB_USER}" >> .env'
+                    sh 'echo "DB_PASSWORD=${DB_PASSWORD}" >> .env'
+                    sh 'echo "DB_DIALECT=${DB_DIALECT}" >> .env'
+                    sh 'echo "DATADOG_API_KEY=${DATADOG_API_KEY}" >> .env'
+                    sh 'echo "DATADOG_SITE=${DATADOG_SITE}" >> .env'
+
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
             }
