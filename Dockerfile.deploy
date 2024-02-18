@@ -1,5 +1,5 @@
 #it will be replaced with lavagna-build:${BUILD_NUMBER} in the Jenkinsfile
-FROM 10.26.0.176:5000/ubuntu:latest
+FROM lavagna-build
 
 ARG DB_DIALECT
 ARG DB_URL
