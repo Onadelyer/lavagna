@@ -42,8 +42,8 @@ services:
       args:
         - POSTGRES_HOST=lavagna-app
         - POSTGRES_PORT=5432
-        - POSTGRES_USER=${DB_USER}
-        - POSTGRES_PASSWORD=${DB_PASSWORD}
+        - POSTGRES_USER=datadog
+        - POSTGRES_PASSWORD=datadog
     pid: host
     environment:
       - DD_SITE=${DATADOG_SITE}
