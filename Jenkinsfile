@@ -146,7 +146,6 @@ pipeline {
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_USER'), 
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_PASSWORD'), 
                                  vaultString(credentialsId: 'lavagna-secret-text', variable: 'DB_DIALECT'), 
-                                 vaultString(credentialsId: 'lavagna-secret-text', variable: 'SPRING_PROFILES_ACTIVE'), 
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_API_KEY'),
                                  vaultString(credentialsId: 'datadog-credentials', variable: 'DATADOG_SITE')]) {
                     sh "export DB_URL=${DB_URL} && export DB_NAME=${DB_NAME} && export DB_USER=${DB_USER} && export DB_PASSWORD=${DB_PASSWORD} && export DB_DIALECT=${DB_DIALECT} && export SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE} && export DATADOG_API_KEY=${DATADOG_API_KEY} && export DATADOG_SITE=${DATADOG_SITE}"
