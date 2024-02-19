@@ -75,8 +75,9 @@ services:
         - POSTGRES_USER=datadog
         - POSTGRES_PASSWORD=datadog
     environment:
-     - DD_API_KEY=${DATADOG_API_KEY}
-     - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_SITE=${DATADOG_SITE}
+      - DD_API_KEY=${DATADOG_API_KEY}
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
