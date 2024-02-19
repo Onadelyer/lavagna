@@ -74,9 +74,6 @@ services:
         - POSTGRES_PORT=5432
         - POSTGRES_USER=datadog
         - POSTGRES_PASSWORD=datadog
-    links:
-      - postgresql
-      - app
     environment:
      - DD_API_KEY=${DATADOG_API_KEY}
      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
