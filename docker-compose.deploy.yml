@@ -43,6 +43,10 @@ services:
       dockerfile: Dockerfile
     pid: host
     environment:
+     - POSTGRES_HOST='localhost'
+     - POSTGRES_PORT='5432'
+     - POSTGRES_USER=datadog  
+     - POSTGRES_PASSWORD=datadog
      - DD_HOSTNAME=dd-agent
      - DD_API_KEY=${DATADOG_API_KEY}
      - DD_SITE=${DATADOG_SITE}
