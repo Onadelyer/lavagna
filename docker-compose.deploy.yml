@@ -38,8 +38,9 @@ services:
       - lavagna
 
   dd-agent:
-    context: ./datadog
-    dockerfile: Dockerfile
+    build:
+      context: ./datadog
+      dockerfile: Dockerfile
     container_name: dd-agent
     environment:
       DD_API_KEY: ${DATADOG_API_KEY}
