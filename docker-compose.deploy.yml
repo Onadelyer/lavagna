@@ -41,12 +41,12 @@ services:
     build: 
       context: ./datadog
       dockerfile: Dockerfile
+      args:
+      - POSTGRES_HOST='localhost'
+      - POSTGRES_PORT='5432'
+      - POSTGRES_USER=datadog  
+      - POSTGRES_PASSWORD=datadog
     pid: host
-    args:
-     - POSTGRES_HOST='localhost'
-     - POSTGRES_PORT='5432'
-     - POSTGRES_USER=datadog  
-     - POSTGRES_PASSWORD=datadog
     environment:
      - DD_HOSTNAME=dd-agent
      - DD_API_KEY=${DATADOG_API_KEY}
