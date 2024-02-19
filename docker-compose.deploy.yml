@@ -38,14 +38,11 @@ services:
       - lavagna
 
   datadog:
-    links:
-      - postgresql
-      - app
     build: 
       context: ./datadog
       dockerfile: Dockerfile
       args:
-      - POSTGRES_HOST=lavagna-db
+      - POSTGRES_HOST=postgresql
       - POSTGRES_PORT=5432
       - POSTGRES_USER=datadog  
       - POSTGRES_PASSWORD=datadog
@@ -58,6 +55,8 @@ services:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    networks:
+      - lavagna
 
 volumes:
   postgres-data:
