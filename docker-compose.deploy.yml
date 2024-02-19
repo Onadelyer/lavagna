@@ -48,6 +48,7 @@ services:
         - POSTGRES_PASSWORD=datadog
     pid: host
     environment:
+      - DD_HOSTNAME=dd-agent
       - DD_SITE=${DATADOG_SITE}
       - DD_API_KEY=${DATADOG_API_KEY}
       - DD_LOGS_ENABLED=true
