@@ -43,6 +43,7 @@ services:
       dockerfile: Dockerfile
     pid: host
     environment:
+     - DD_HOSTNAME=dd-agent
      - DD_API_KEY=${DATADOG_API_KEY}
      - DD_SITE=${DATADOG_SITE}
     volumes:
