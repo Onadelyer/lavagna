@@ -66,6 +66,9 @@ services:
   #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
       
   datadog:
+    links:
+      - app
+      - postgresql
     build: 
       context: ./datadog
       dockerfile: Dockerfile
