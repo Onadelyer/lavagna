@@ -38,18 +38,14 @@ services:
       - lavagna
  
   datadog:
-    links:
-      - app
-      - postgresql
     build: 
       context: ./datadog
       dockerfile: Dockerfile
-      args:
-        - POSTGRES_HOST=localhost
-        - POSTGRES_PORT=5432
-        - POSTGRES_USER=datadog
-        - POSTGRES_PASSWORD=datadog
     environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=datadog
+      - POSTGRES_PASSWORD=datadog
       - DD_SITE=${DATADOG_SITE}
       - DD_API_KEY=${DATADOG_API_KEY}
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
