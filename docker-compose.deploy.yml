@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./conf:/docker-entrypoint-initdb.d
-      - ./conf/postgresql.conf:/var/lib/postgresql/postgresql.conf
+      - ./conf/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     networks:
       - lavagna
 
