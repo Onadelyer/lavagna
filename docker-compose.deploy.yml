@@ -42,8 +42,8 @@ services:
       context: ./datadog
       dockerfile: Dockerfile
       args:
-      - POSTGRES_HOST='localhost'
-      - POSTGRES_PORT='5432'
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=datadog  
       - POSTGRES_PASSWORD=datadog
     pid: host
