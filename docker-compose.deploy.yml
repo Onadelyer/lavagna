@@ -41,8 +41,8 @@ services:
     build:
       context: ./datadog
       dockerfile: Dockerfile
-    container_name: dd-agent
     environment:
+      DD_HOSTNAME: dd-agent
       DD_API_KEY: ${DATADOG_API_KEY}
       DD_SITE: ${DATADOG_SITE}
       DD_APM_ENABLED: "true"
