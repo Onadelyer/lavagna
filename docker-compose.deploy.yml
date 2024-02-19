@@ -73,7 +73,7 @@ services:
       context: ./datadog
       dockerfile: Dockerfile
       args:
-        - POSTGRES_HOST=lavagna-db
+        - POSTGRES_HOST=postgresql
         - POSTGRES_PORT=5432
         - POSTGRES_USER=datadog
         - POSTGRES_PASSWORD=datadog
