@@ -1,4 +1,4 @@
-FROM gcr.io/datadoghq/agent:latest
+FROM gcr.io/datadoghq/agent:7
 
 ARG POSTGRES_HOST
 ARG POSTGRES_PORT
