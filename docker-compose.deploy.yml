@@ -42,6 +42,7 @@ services:
       context: ./datadog
       dockerfile: Dockerfile
     environment:
+      - DD_HOSTNAME=dd-agent
       - POSTGRES_HOST=localhost
       - POSTGRES_PORT=5432
       - POSTGRES_USER=datadog
