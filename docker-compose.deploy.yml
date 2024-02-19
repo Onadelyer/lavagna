@@ -17,7 +17,8 @@ services:
       - ./conf/postgresql.conf:/etc/postgresql.conf
     command: -c config_file=/etc/postgresql.conf
     networks:
-      - lavagna
+      lavagna:
+        ipv4_address: 172.18.0.21
 
   app:
     container_name: lavagna-app
@@ -35,14 +36,15 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - lavagna
+      lavagna:
+        ipv4_address: 172.18.0.22
 
   datadog:
     build: 
       context: ./datadog
       dockerfile: Dockerfile
       args:
-      - POSTGRES_HOST=postgresql
+      - POSTGRES_HOST=172.18.0.21
       - POSTGRES_PORT=5432
       - POSTGRES_USER=datadog  
       - POSTGRES_PASSWORD=datadog
@@ -63,3 +65,6 @@ volumes:
 networks:
   lavagna:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
