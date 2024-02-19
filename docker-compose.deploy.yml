@@ -43,13 +43,13 @@ services:
       dockerfile: Dockerfile
     pid: host
     environment:
-     - DD_API_KEY=${DD_API_KEY}
-     - DD_SITE=datadoghq.com
+     - DD_API_KEY=${DATADOG_API_KEY}
+     - DD_SITE=${DATADOG_SITE}
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-     
+
 volumes:
   postgres-data:
     driver: local
