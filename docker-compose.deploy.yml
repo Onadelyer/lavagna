@@ -56,6 +56,8 @@ services:
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     restart: always
+    depends_on:
+      - app
     networks:
       - lavagna
 
