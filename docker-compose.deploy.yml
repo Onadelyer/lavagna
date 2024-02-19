@@ -36,25 +36,20 @@ services:
       - "8080:8080"
     networks:
       - lavagna
- 
+
   datadog:
     build: 
       context: ./datadog
       dockerfile: Dockerfile
+    pid: host
     environment:
-      - DD_HOSTNAME=dd-agent
-      - POSTGRES_HOST=localhost
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=datadog
-      - POSTGRES_PASSWORD=datadog
-      - DD_SITE=${DATADOG_SITE}
-      - DD_API_KEY=${DATADOG_API_KEY}
-      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+     - DD_API_KEY=${DD_API_KEY}
+     - DD_SITE=datadoghq.com
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-
+     
 volumes:
   postgres-data:
     driver: local
