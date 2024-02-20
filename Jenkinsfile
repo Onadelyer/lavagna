@@ -73,7 +73,7 @@ pipeline {
                         agent {
                             docker {
                                 label "${agentLabel}"
-                                image 'maven:3.8.6-openjdk-8'
+                                image '10.26.0.176:5000/maven:3.8.6-openjdk-8'
                                 args "--network ${NETWORK_NAME}"
                             }
                         }
