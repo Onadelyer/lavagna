@@ -161,13 +161,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            script {
-                if (isPullRequest == true) {
-                    sh 'docker-compose -f docker-compose.dbstart.yml down -v'
-                }
-            }
-        }
-    }
 }
