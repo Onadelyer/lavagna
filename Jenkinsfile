@@ -160,8 +160,8 @@ pipeline {
                 }
                 script{
                     sh "docker tag 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
-                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}""
-                    sh 'docker rmi lavagna-build:${BUILD_NUMBER}'
+                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker rmi lavagna-build:${BUILD_NUMBER}"
                 }
             }
         }
