@@ -1,8 +1,5 @@
-FROM 10.26.0.176:5000/ubuntu:latest
+FROM 10.26.0.176:5000/maven:3.8.6-openjdk-8
 # Install any needed packages specified in requirements.txt
-RUN apt-get update && apt-get install -y maven openjdk-8-jdk
-
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 WORKDIR /app
 

@@ -64,12 +64,12 @@ pipeline {
                         agent {
                             docker {
                                 label "${agentLabel}"
-                                image '10.26.0.176:5000/maven:3.8.6-openjdk-8'
+                                image "lavagna-build:${env.BUILD_NUMBER}"
                                 args "--network ${NETWORK_NAME}"
                             }
                         }
                         steps {
-                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
                         }
                     }
                 }
@@ -97,12 +97,12 @@ pipeline {
                         agent {
                             docker {
                                 label "${agentLabel}"
-                                image '10.26.0.176:5000/maven:3.8.6-openjdk-8'
+                                image "lavagna-build:${env.BUILD_NUMBER}"
                                 args "--network ${NETWORK_NAME}"
                             }
                         }
                         steps {
-                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
                         }
                     }
                 }
@@ -151,7 +151,7 @@ pipeline {
                 }
                 script{
                     sh "docker tag lavagna-build:${BUILD_NUMBER} 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
-                    sh "docker push 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
                     sh "docker rmi lavagna-build:${BUILD_NUMBER}"
                 }
             }
