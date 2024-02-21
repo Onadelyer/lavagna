@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgresql:
+    container_name: lavagna-db
+    image: 10.26.0.176:5000/postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: '${DB_USER}'
+      POSTGRES_PASSWORD: $DB_PASSWORD
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./conf:/docker-entrypoint-initdb.d
+      - ./conf/postgresql.conf:/etc/postgresql.conf
+    command: -c config_file=/etc/postgresql.conf
+    networks:
+      - lavagna
+
+  app:
+    container_name: lavagna-app
+    build:
+      context: .
+      dockerfile: Dockerfile.deploy
+      args:
+        DB_DIALECT: ${DB_DIALECT}
+        DB_URL: "${DB_URL}"
+        DB_USERNAME: "${DB_USER} "
+        DB_PASSWORD: "${DB_PASSWORD}"
+        SPRING_PROFILES_ACTIVE: "dev"
+    depends_on:
+      - postgresql
+    ports:
+      - "8080:8080"
+    networks:
+      - lavagna
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  lavagna:
+    driver: bridge

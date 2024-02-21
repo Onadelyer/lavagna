@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM 10.26.0.176:5000/ubuntu:latest
 # Install any needed packages specified in requirements.txt
 RUN apt-get update && apt-get install -y maven openjdk-8-jdk
 

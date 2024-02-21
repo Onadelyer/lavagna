@@ -1,46 +1,79 @@
+//change id is not null only if it is a pull request
+def isPullRequest = env.CHANGE_ID != null
+
+def agentLabel
+if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
+    agentLabel = "dev"
+} else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
+    agentLabel = "qa"
+} else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
+    agentLabel = "main"
+}
+
+def testProfiles = []
+if (env.CHANGE_TARGET == 'main') {
+    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+} else if (env.CHANGE_TARGET == 'qa') {
+    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
+} else if (env.CHANGE_TARGET == 'dev') {
+    testProfiles = ["HSQLDB"]
+}
+
 pipeline {
-    agent any
+    agent { label "${agentLabel}" }
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
     }
 
     stages {
-        stage('Clear environment') {
+        stage('Build app image'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
             steps {
-                sh 'chmod +x ./clear-environment.sh'
-                sh './clear-environment.sh'
+                script{
+                    docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
+                }
             }
         }
 
-        // stage('Build app image'){
-        //     steps {
-        //         script{
-        //             docker.build("lavagna-build", "-f Dockerfile.build .")
-        //         }
-        //     }
-        // }
-
-        stage('Setup test databases'){
+        stage('Up test db services'){
+            when{
+                allOf{
+                    expression{isPullRequest == true}
+                }
+            }
             steps{
-                sh "echo ${JOB_NAME}"
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
 
-        stage("Execute tests") {
+        stage("All db tests") {
+            when{
+                allOf{
+                    anyOf{
+                        expression{env.CHANGE_TARGET == 'main'}
+                        expression{env.CHANGE_TARGET == 'qa'}
+                    }
+                    expression{isPullRequest == true}
+                }
+            }
             matrix {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values "HSQLDB", "PGSQL", "MYSQL", "MARIADB"
+                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
                     }
                 }
                 stages {
                     stage('Test') {
                         agent {
                             docker {
-                                image 'maven:3.8.6-openjdk-8'
+                                label "${agentLabel}"
+                                image '10.26.0.176:5000/maven:3.8.6-openjdk-8'
                                 args "--network ${NETWORK_NAME}"
                             }
                         }
@@ -52,63 +85,85 @@ pipeline {
             }
         }
 
-        stage('Down test databases'){
-            steps{
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
+        stage("Single db test") {
+            when{
+                allOf{
+                    anyOf{
+                        expression{env.CHANGE_TARGET == 'dev'}
+                    }
+                    expression{isPullRequest == true}
+                }
+            }
+            matrix {
+                axes {
+                    axis {
+                        name "TEST_PROFILE"
+                        values 'HSQLDB'
+                    }
+                }
+                stages {
+                    stage('Test') {
+                        agent {
+                            docker {
+                                label "${agentLabel}"
+                                image '10.26.0.176:5000/maven:3.8.6-openjdk-8'
+                                args "--network ${NETWORK_NAME}"
+                            }
+                        }
+                        steps {
+                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                        }
+                    }
+                }
             }
         }
 
+        stage('Down previous deployment'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps{
+                script {
+                    sh 'docker-compose -f docker-compose.deploy.yml down'
+                    sh 'docker-compose -f docker-compose.deploy.yml rm'
+                }
+            }
+        }
 
-        // stage('Build HSQLDB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //         }
-        //     }
-        //     steps {
-        //         checkout scm
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=HSQLDB -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build PGSQL 9.4') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=PGSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MYSQL') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MYSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MARIADB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MARIADB -B package --file pom.xml'
-        //     }
-        // }
+        stage('Deploy'){
+            when{
+                allOf{
+                    expression{isPullRequest == false}
+                }
+            }
+            steps{
+                script {
+                    sh "sed -i 's/FROM .*/FROM lavagna-build:${BUILD_NUMBER}/' Dockerfile.deploy"
+                }
+                withVault(configuration: [disableChildPoliciesOverride: false, timeout: 60, vaultCredentialId: 'vault-jenkins-role', vaultUrl: 'http://10.26.0.208:8200'], 
+                vaultSecrets: [
+                [path: 'secrets/creds/lavagna-secret-text', secretValues: [[vaultKey: 'DB_URL'], [vaultKey: 'DB_NAME'], [vaultKey: 'DB_USER'], [vaultKey: 'DB_PASSWORD'], [vaultKey: 'DB_DIALECT']]], 
+                [path: 'secrets/creds/datadog-credentials', secretValues: [[vaultKey: 'DATADOG_API_KEY'], [vaultKey: 'DATADOG_SITE']]]
+                ]) {
+                    
+                    sh 'echo "DB_URL=${DB_URL}" > .env'
+                    sh 'echo "DB_NAME=${DB_NAME}" >> .env'
+                    sh 'echo "DB_USER=${DB_USER}" >> .env'
+                    sh 'echo "DB_PASSWORD=${DB_PASSWORD}" >> .env'
+                    sh 'echo "DB_DIALECT=${DB_DIALECT}" >> .env'
+                    sh 'echo "DATADOG_API_KEY=${DATADOG_API_KEY}" >> .env'
+                    sh 'echo "DATADOG_SITE=${DATADOG_SITE}" >> .env'
+
+                    step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+                }
+                script{
+                    sh "docker tag 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker rmi lavagna-build:${BUILD_NUMBER}"
+                }
+            }
+        }
     }
 }
