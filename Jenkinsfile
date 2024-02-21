@@ -10,15 +10,6 @@ if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
     agentLabel = "main"
 }
 
-def testProfiles = []
-if (env.CHANGE_TARGET == 'main') {
-    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-} else if (env.CHANGE_TARGET == 'qa') {
-    testProfiles = ["HSQLDB", "PGSQL", "MYSQL", "MARIADB"]
-} else if (env.CHANGE_TARGET == 'dev') {
-    testProfiles = ["HSQLDB"]
-}
-
 pipeline {
     agent { label "${agentLabel}" }
     
@@ -159,8 +150,8 @@ pipeline {
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
                 script{
-                    sh "docker tag 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
-                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker tag lavagna-build:${BUILD_NUMBER} 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
+                    sh "docker push 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
                     sh "docker rmi lavagna-build:${BUILD_NUMBER}"
                 }
             }
