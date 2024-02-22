@@ -15,27 +15,33 @@ pipeline {
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
+        IMAGE_NAME = "lavagna-build${env.BUILD_NUMBER}"
     }
 
     stages {
-        stage('Build app image'){
-            when{
-                allOf{
-                    expression{isPullRequest == false}
-                }
+        stage('Build app image') {
+            when {
+                allOf {expression{isPullRequest == true}}
             }
             steps {
-                script{
-                    docker.build("lavagna-build:${env.BUILD_NUMBER}", "-f Dockerfile.build .")
+                script {
+                    echo "Building Docker image: ${env.IMAGE_NAME}"
+                    
+                    try {
+                        def builtImage = docker.build("env.IMAGE_NAME", "-f Dockerfile.build .")
+                        
+                        echo "Successfully built ${fullImageName}"
+                    } catch (Exception e) {
+                        echo "Error building Docker image: ${e.getMessage()}"
+                        throw
+                    }
                 }
             }
         }
 
         stage('Up test db services'){
             when{
-                allOf{
-                    expression{isPullRequest == true}
-                }
+                allOf{expression{isPullRequest == true}}
             }
             steps{
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
@@ -76,7 +82,7 @@ pipeline {
             }
         }
 
-        stage("Single db test") {
+        stage("Single db tests") {
             when{
                 allOf{
                     anyOf{
@@ -111,9 +117,7 @@ pipeline {
 
         stage('Down previous deployment'){
             when{
-                allOf{
-                    expression{isPullRequest == false}
-                }
+                allOf{expression{isPullRequest == false}}
             }
             steps{
                 script {
@@ -149,10 +153,18 @@ pipeline {
 
                     step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.deploy.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
                 }
+            }
+        }
+
+        stage('Push image to registry'){
+            when{
+                allOf{expression{isPullRequest == false}}
+            }
+            steps{
                 script{
-                    sh "docker tag lavagna-build:${BUILD_NUMBER} 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
-                    sh "docker push 1.0 10.26.0.176:5000/lavagna-build:${BUILD_NUMBER}"
-                    sh "docker rmi lavagna-build:${BUILD_NUMBER}"
+                    docker.withRegistry('http://10.26.0.176:5000') {
+                        docker.image("lavagna-build:${env.BUILD_NUMBER}").push()
+                    }
                 }
             }
         }
