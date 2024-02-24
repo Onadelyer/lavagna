@@ -27,18 +27,13 @@ pipeline {
                 script {
                     echo "Building Docker image: ${env.IMAGE_NAME}"
                     
-                    try {
-                        def builtImage = docker.build("env.IMAGE_NAME", "-f Dockerfile.build .")
-                        
-                        echo "Successfully built ${fullImageName}"
+                    def builtImage = docker.build("env.IMAGE_NAME", "-f Dockerfile.build .")
+                    
+                    echo "Successfully built ${fullImageName}"
 
-                        // Push the image to the registry
-                        docker.withRegistry('http://10.26.0.176:5000') {
-                            docker.image("lavagna-build:${env.BUILD_NUMBER}").push()
-                        }
-                    } catch (Exception e) {
-                        echo "Error building Docker image: ${e.getMessage()}"
-                        throw
+                    // Push the image to the registry
+                    docker.withRegistry('http://10.26.0.176:5000') {
+                        docker.image("lavagna-build:${env.BUILD_NUMBER}").push()
                     }
                 }
             }
