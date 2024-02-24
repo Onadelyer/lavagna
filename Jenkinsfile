@@ -20,9 +20,9 @@ pipeline {
 
     stages {
         stage('Build app image') {
-            when {
-                allOf {expression{isPullRequest == true}}
-            }
+            // when {
+            //     allOf {expression{isPullRequest == true}}
+            // }
             steps {
                 script {
                     echo "Building Docker image: ${env.IMAGE_NAME}"
