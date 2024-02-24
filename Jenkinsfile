@@ -15,7 +15,7 @@ pipeline {
     
     environment {
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
-        IMAGE_NAME = "lavagna-build${env.BUILD_NUMBER}"
+        IMAGE_NAME = "lavagna-build:${env.BUILD_NUMBER}"
     }
 
     stages {
