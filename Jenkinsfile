@@ -29,11 +29,11 @@ pipeline {
                     
                     def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                     
-                    echo "Successfully built ${fullImageName}"
+                    echo "Successfully built ${env.IMAGE_NAME}"
 
                     // Push the image to the registry
                     docker.withRegistry('http://10.26.0.176:5000') {
-                        docker.image("lavagna-build:${env.BUILD_NUMBER}").push()
+                        docker.image("${env.IMAGE_NAME}").push()
                     }
                 }
             }
