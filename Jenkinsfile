@@ -27,7 +27,7 @@ pipeline {
                 script {
                     echo "Building Docker image: ${env.IMAGE_NAME}"
                     
-                    def builtImage = docker.build("env.IMAGE_NAME", "-f Dockerfile.build .")
+                    def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                     
                     echo "Successfully built ${fullImageName}"
 
