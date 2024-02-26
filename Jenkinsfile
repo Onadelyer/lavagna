@@ -39,7 +39,7 @@ pipeline {
         stage('Clone'){
             steps{
                 container('docker'){
-                    git branch "${environment}", changelog: false, poll: false, url: "${env.REPO_URL}"
+                    git branch: "${environment}", changelog: false, poll: false, url: "${env.REPO_URL}"
                 }
             }
         }
