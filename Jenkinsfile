@@ -1,24 +1,49 @@
 //change id is not null only if it is a pull request
 def isPullRequest = env.CHANGE_ID != null
 
-def agentLabel
+def environment
 if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
-    agentLabel = "dev"
+    environment = "dev"
 } else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
-    agentLabel = "qa"
+    environment = "qa"
 } else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
-    agentLabel = "main"
+    environment = "main"
 }
 
 pipeline {
-    agent { label "${agentLabel}" }
+    // agent { label "${agentLabel}" }
+
+    agent {
+        kubernetes {
+            yaml '''
+            apiVersion: v1
+            kind: Pod
+            spec:
+                containers:
+                - name: docker
+                image: 10.26.0.176/docker-builder:latest
+                command:
+                - cat
+                tty: true  
+            '''
+        }
+    }
     
     environment {
+        REPO_URL = "https://github.com/Onadelyer/lavagna.git"
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
         IMAGE_NAME = "lavagna-build:${env.BUILD_NUMBER}"
     }
 
     stages {
+        stage('Clone'){
+            steps{
+                container('docker'){
+                    git branch "${environment}", changelog: false, poll: false, url: "${env.REPO_URL}"
+                }
+            }
+        }
+
         stage('Build app image') {
             // when {
             //     allOf {expression{isPullRequest == true}}
@@ -27,12 +52,12 @@ pipeline {
                 script {
                     echo "Building Docker image: ${env.IMAGE_NAME}"
                     
-                    def builtImage = docker.build("docker-builder:latest", "-f Dockerfile.dockerbuilder .")
+                    def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                     
                     echo "Successfully built ${env.IMAGE_NAME}"
 
                     docker.withRegistry('http://10.26.0.176:5000') {
-                        docker.image("docker-builder:latest").push()
+                        docker.image("${env.IMAGE_NAME}").push()
                     }
                 }
             }
