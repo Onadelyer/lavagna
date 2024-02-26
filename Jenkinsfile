@@ -1,13 +1,13 @@
 //change id is not null only if it is a pull request
 def isPullRequest = env.CHANGE_ID != null
 
-def environment
+def environmentVars
 if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
-    environment = "dev"
+    environmentVars = "dev"
 } else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
-    environment = "qa"
+    environmentVars = "qa"
 } else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
-    environment = "main"
+    environmentVars = "main"
 }
 
 pipeline {
@@ -39,7 +39,7 @@ pipeline {
         stage('Clone'){
             steps{
                 container('docker'){
-                    git branch: "${environment}", changelog: false, poll: false, url: "${env.REPO_URL}"
+                    git branch: "${environmentVars}", changelog: false, poll: false, url: "${env.REPO_URL}"
                 }
             }
         }
