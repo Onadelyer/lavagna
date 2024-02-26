@@ -21,10 +21,10 @@ pipeline {
             spec:
                 containers:
                 - name: docker
-                    image: 10.26.0.176/docker-builder:latest
-                    command:
-                    - cat
-                    tty: true  
+                  image: 10.26.0.176/docker-builder:latest
+                  command:
+                  - cat
+                  tty: true  
             '''
         }
     }
