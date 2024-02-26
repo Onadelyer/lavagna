@@ -49,15 +49,17 @@ pipeline {
             //     allOf {expression{isPullRequest == true}}
             // }
             steps {
-                script {
-                    echo "Building Docker image: ${env.IMAGE_NAME}"
-                    
-                    def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
-                    
-                    echo "Successfully built ${env.IMAGE_NAME}"
+                container('docker'){
+                    script {
+                        echo "Building Docker image: ${env.IMAGE_NAME}"
+                        
+                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+                        
+                        echo "Successfully built ${env.IMAGE_NAME}"
 
-                    docker.withRegistry('http://10.26.0.176:5000') {
-                        docker.image("${env.IMAGE_NAME}").push()
+                        docker.withRegistry('http://10.26.0.176:5000') {
+                            docker.image("${env.IMAGE_NAME}").push()
+                        }
                     }
                 }
             }
