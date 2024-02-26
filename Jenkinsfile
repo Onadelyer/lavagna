@@ -27,13 +27,12 @@ pipeline {
                 script {
                     echo "Building Docker image: ${env.IMAGE_NAME}"
                     
-                    def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+                    def builtImage = docker.build("docker-builder:latest", "-f Dockerfile.dockerbuilder .")
                     
                     echo "Successfully built ${env.IMAGE_NAME}"
 
-                    // Push the image to the registry
                     docker.withRegistry('http://10.26.0.176:5000') {
-                        docker.image("${env.IMAGE_NAME}").push()
+                        docker.image("docker-builder:latest").push()
                     }
                 }
             }
