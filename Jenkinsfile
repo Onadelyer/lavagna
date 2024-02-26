@@ -21,7 +21,7 @@ pipeline {
             spec:
               containers:
               - name: docker
-                image: 10.26.0.176/docker-builder:latest
+                image: 10.26.0.176:5000/docker-builder:latest
                 command:
                 - cat
                 tty: true  
