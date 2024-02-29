@@ -20,18 +20,18 @@ pipeline {
             kind: Pod
             spec:
             containers:
-            - name: docker
+              - name: docker
                 image: docker:latest
                 command: ["dockerd-entrypoint.sh"]
                 args: []
                 readinessProbe:
-                exec:
+                  exec:
                     command:
-                    - sh
-                    - -c
-                    - "docker info || exit 1"
-                initialDelaySeconds: 5
-                periodSeconds: 5
+                      - sh
+                      - -c
+                      - "docker info || exit 1"
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
             '''
         }
     }
