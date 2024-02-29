@@ -9,3 +9,6 @@ spec:
     name: docker
     securityContext:
       privileged: true
+    args:
+    - dockerd
+    - --insecure-registry=your-registry-domain.com:5000
