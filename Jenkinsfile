@@ -44,6 +44,8 @@ pipeline {
                         
                         sh 'dockerd & > /dev/null'
 
+                        sh 'curl -X GET https://docker-registry:5000/v2/'
+
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
                         echo "Successfully built ${env.IMAGE_NAME}"
