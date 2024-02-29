@@ -9,6 +9,11 @@ spec:
     name: docker
     securityContext:
       privileged: true
-    args:
-    - dockerd
-    - --insecure-registry=your-registry-domain.com:5000
+    volumeMounts:
+    - name: docker-daemon-config
+      mountPath: /etc/docker/daemon.json
+      subPath: daemon.json
+  volumes:
+  - name: docker-daemon-config
+    configMap:
+      name: docker-daemon-config
