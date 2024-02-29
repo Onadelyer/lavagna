@@ -48,7 +48,7 @@ pipeline {
                         
                         echo "Successfully built ${env.IMAGE_NAME}"
 
-                        docker.withRegistry('http://registry.docker-registry.svc.cluster.local:5000') {
+                        docker.withRegistry('http://docker-registry:5000') {
                             docker.image("${env.IMAGE_NAME}").push()
                         }
                     }
