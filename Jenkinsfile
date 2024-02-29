@@ -15,20 +15,9 @@ pipeline {
 
     agent {
         kubernetes {
-            yaml '''
-            apiVersion: v1
-            kind: Pod
-            spec:
-              containers:
-              - name: docker
-                image: docker:latest
-                command:
-                - cat
-                tty: true  
-            '''
+            yamlFile 'podTemplate.yaml' 
         }
     }
-    
     environment {
         REPO_URL = "https://github.com/Onadelyer/lavagna.git"
         NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
