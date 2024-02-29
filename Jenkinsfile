@@ -19,12 +19,19 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
-              containers:
-              - name: docker
+            containers:
+            - name: docker
                 image: docker:latest
-                command:
-                - cat
-                tty: true  
+                command: ["dockerd-entrypoint.sh"]
+                args: []
+                readinessProbe:
+                exec:
+                    command:
+                    - sh
+                    - -c
+                    - "docker info || exit 1"
+                initialDelaySeconds: 5
+                periodSeconds: 5
             '''
         }
     }
