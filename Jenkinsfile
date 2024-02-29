@@ -41,10 +41,8 @@ pipeline {
                 container('docker'){
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
-                        
-                        sh 'dockerd & > /dev/null'
 
-                        sh 'curl -X GET https://docker-registry:5000/v2/'
+                        sh "docker --version"
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
