@@ -42,6 +42,10 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
+                        docker.withRegistry('http://docker-registry:5000') {
+
+                        }
+
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
                         echo "Successfully built ${env.IMAGE_NAME}"
