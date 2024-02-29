@@ -9,11 +9,8 @@ spec:
     name: docker
     securityContext:
       privileged: true
-    volumeMounts:
-    - name: docker-daemon-config
-      mountPath: /etc/docker/daemon.json
-      subPath: daemon.json
-  volumes:
-  - name: docker-daemon-config
-    configMap:
-      name: docker-daemon-config
+    env:
+      - name: DOCKER_TLS_CERTDIR
+        value: "/certs"
+    command: ["/bin/sh"]
+    args: ["-c", "dockerd-entrypoint.sh --insecure-registry=docker-registry:5000"]
