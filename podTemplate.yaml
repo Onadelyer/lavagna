@@ -6,6 +6,6 @@ metadata:
 spec:
   containers:
   - image: docker:24.0.0-rc.1-dind
-    name: dockercontainer
+    name: docker
     securityContext:
       privileged: true # this should do the trick
