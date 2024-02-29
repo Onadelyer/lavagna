@@ -19,19 +19,12 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
-            containers:
+              containers:
               - name: docker
                 image: docker:latest
-                command: ["dockerd-entrypoint.sh"]
-                args: []
-                readinessProbe:
-                  exec:
-                    command:
-                      - sh
-                      - -c
-                      - "docker info || exit 1"
-                  initialDelaySeconds: 5
-                  periodSeconds: 5
+                command:
+                - cat
+                tty: true  
             '''
         }
     }
@@ -60,7 +53,7 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
                         
-                        sh "docker --version"
+                        sh 'dockerd & > /dev/null'
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
