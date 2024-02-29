@@ -42,6 +42,8 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
+                        sh "docker login docker-registry:5000 -u yourUsername -p yourPassword || exit 1"
+
                         sh "docker --version"
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
