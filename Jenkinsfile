@@ -42,7 +42,7 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        sh 'docker info'
+                        sh 'kubectl get ns'
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
@@ -55,7 +55,7 @@ pipeline {
                 }
             }
         }
-
+        
         // stage('Up test db services'){
         //     when{
         //         allOf{expression{isPullRequest == true}}
