@@ -42,8 +42,6 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
-                        
                         sh """
                             curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
                             chmod +x ./kubectl
@@ -53,6 +51,8 @@ pipeline {
                         withKubeConfig(){
                             sh 'kubectl get ns'
                         }
+
+                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
                         echo "Successfully built ${env.IMAGE_NAME}"
 
