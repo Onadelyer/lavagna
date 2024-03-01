@@ -42,7 +42,7 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        kubeconfig(serverUrl: '192.168.49.2') {
+                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: '', restrictKubeConfigAccess: false, serverUrl: '192.168.49.2') {
                             sh 'kubectl get ns'
                         }
 
