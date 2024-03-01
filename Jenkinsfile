@@ -38,21 +38,28 @@ pipeline {
             //     allOf {expression{isPullRequest == true}}
             // }
             steps {
-                // container('docker'){
-                //     script {
-                //         echo "Building Docker image: ${env.IMAGE_NAME}"
+                container('docker'){
+                    script {
+                        echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                //         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
-                //         echo "Successfully built ${env.IMAGE_NAME}"
+                        sh """
+                            curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+                            chmod +x ./kubectl
+                            ./kubectl version --client
+                        """
 
-                //         docker.withRegistry('http://docker-registry:5000') {
-                //             docker.image("${env.IMAGE_NAME}").push()
-                //         }
-                //     }
-                // }
-                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: '', restrictKubeConfigAccess: false, serverUrl: '192.168.49.2') {
-                    sh 'kubectl get ns'
+                        withKubeConfig(){
+                            sh 'kubectl get ns'
+                        }
+
+                        echo "Successfully built ${env.IMAGE_NAME}"
+
+                        docker.withRegistry('http://docker-registry:5000') {
+                            docker.image("${env.IMAGE_NAME}").push()
+                        }
+                    }
                 }
             }
         }
