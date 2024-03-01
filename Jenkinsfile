@@ -42,7 +42,7 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        withKubeConfig() {
+                        withKubeConfig([credentialsId: '', serverUrl: 'https://192.168.49.2']) {
                             sh 'kubectl get ns'
                         }
 
