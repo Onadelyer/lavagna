@@ -48,7 +48,7 @@ pipeline {
                             install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
                         '''
 
-                        withKubeConfig(caCertificate: '', clusterName: 'minikube', contextName: 'minikube', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: 'jenkins', restrictKubeConfigAccess: false, serverUrl: '192.168.49.2') {
+                        withKubeConfig(caCertificate: '', clusterName: 'minikube', contextName: 'minikube', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: 'jenkins', restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
                             sh 'kubectl get ns'
                         }
 
