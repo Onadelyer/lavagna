@@ -42,6 +42,10 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
+                        withKubeConfig() {
+                            sh 'kubectl get ns'
+                        }
+
                         sh 'kubectl get ns'
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
