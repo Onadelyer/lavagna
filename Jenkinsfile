@@ -46,8 +46,6 @@ pipeline {
                             sh 'kubectl get ns'
                         }
 
-                        sh 'kubectl get ns'
-
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
                         echo "Successfully built ${env.IMAGE_NAME}"
