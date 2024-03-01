@@ -42,10 +42,6 @@ pipeline {
                     script {
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: '', restrictKubeConfigAccess: false, serverUrl: '192.168.49.2') {
-                            sh 'kubectl get ns'
-                        }
-
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
                         
                         echo "Successfully built ${env.IMAGE_NAME}"
@@ -54,6 +50,9 @@ pipeline {
                             docker.image("${env.IMAGE_NAME}").push()
                         }
                     }
+                }
+                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: '', restrictKubeConfigAccess: false, serverUrl: '192.168.49.2') {
+                    sh 'kubectl get ns'
                 }
             }
         }
