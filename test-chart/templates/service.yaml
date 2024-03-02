@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: my-nginx
 spec:
-  type: {{ .Values.service.type | default "ClusterIP" }}
+  type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: 80
