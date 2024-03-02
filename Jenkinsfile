@@ -51,6 +51,7 @@ pipeline {
                 container('kubectl-deploy'){
                     script{
                         withKubeConfig(caCertificate: '', clusterName: 'minikube', contextName: 'minikube', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: 'jenkins', restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
+                            sh 'kubectl get ns'
                             sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER}"
                         }
                     }
