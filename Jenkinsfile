@@ -25,26 +25,26 @@ pipeline {
     }
 
     stages {
-        stage('Build app image') {
-            // when {
-            //     allOf {expression{isPullRequest == true}}
-            // }
-            steps {
-                container('docker-builder'){
-                    script {
-                        echo "Building Docker image: ${env.IMAGE_NAME}"
+        // stage('Build app image') {
+        //     // when {
+        //     //     allOf {expression{isPullRequest == true}}
+        //     // }
+        //     steps {
+        //         container('docker-builder'){
+        //             script {
+        //                 echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+        //                 def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
-                        echo "Successfully built ${env.IMAGE_NAME}"
+        //                 echo "Successfully built ${env.IMAGE_NAME}"
 
-                        docker.withRegistry('http://docker-registry:5000') {
-                            docker.image("${env.IMAGE_NAME}").push()
-                        }
-                    }
-                }
-            }
-        }
+        //                 docker.withRegistry('http://docker-registry:5000') {
+        //                     docker.image("${env.IMAGE_NAME}").push()
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         
         stage('Deploy to K8S'){
             steps{
@@ -52,7 +52,8 @@ pipeline {
                     script{
                         withKubeConfig(caCertificate: '', clusterName: 'minikube', contextName: 'minikube', credentialsId: 'c8e3e0db-7d5c-48e7-8012-16ae6273dfbe', namespace: 'jenkins', restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
                             sh 'kubectl get ns'
-                            sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER}"
+                            // sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER}"
+                            sh 'helm ls'
                         }
                     }
                 }
