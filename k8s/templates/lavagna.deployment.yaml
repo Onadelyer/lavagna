@@ -23,19 +23,16 @@ spec:
     spec:
       containers:
         - name: app
-          image: 10.26.0.176:5000/lavagna-build:20
+          image: "lavagna-build:{{ .Values.image.tag }}"
           env:
             - name: DB_DIALECT
               value: PGSQL
             - name: DB_URL
-              value: "${DB_URL}"
+              value: jdbc:postgresql://postgresql:5432/lavagna
             - name: DB_USERNAME
-              value: "${DB_USER}"
+              value: myuser
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-password
-                  key: password
+              value: mypassword
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
           ports:
