@@ -7,7 +7,7 @@ spec:
   containers:
   - image: docker:24.0.0-rc.1-dind
     name: docker-builder
-    securityContext:
+    securityContext:  
       privileged: true
     env:
       - name: DOCKER_TLS_CERTDIR
@@ -16,3 +16,4 @@ spec:
     args: ["-c", "dockerd-entrypoint.sh --insecure-registry=docker-registry:5000"]
   - image: dtzar/helm-kubectl:latest
     name: kubectl-deploy
+    tty: true
