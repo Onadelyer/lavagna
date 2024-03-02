@@ -6,5 +6,5 @@ image:
   tag: "latest"
 
 service:
-  type: "ClusterIP"
+  type: ClusterIP
   port: 80
