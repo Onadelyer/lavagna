@@ -38,7 +38,7 @@ pipeline {
 
                         echo "Successfully built ${env.IMAGE_NAME}"
 
-                        docker.withRegistry('http://host.minikube.internal:5000') {
+                        docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
                             docker.image("${env.IMAGE_NAME}").push()
                         }
                     }
