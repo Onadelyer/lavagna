@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: "192.168.49.2:30000/lavagna-build:{{ .Values.image.tag }}"
+          image: "localhost:5000/lavagna-build:{{ .Values.image.tag }}"
           env:
             - name: DB_DIALECT
               value: PGSQL
