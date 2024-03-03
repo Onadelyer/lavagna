@@ -14,9 +14,6 @@ spec:
         value: "/certs"
     command: ["/bin/sh"]
     args: ["-c", "dockerd-entrypoint.sh --insecure-registry=docker-registry:5000"]
-    ports:
-    - containerPort: 5000
-      hostPort: 5000
   - image: dtzar/helm-kubectl:latest
     name: kubectl-deploy
     tty: true
