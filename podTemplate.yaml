@@ -15,13 +15,13 @@ spec:
     # command: ["/bin/sh"]
     # args: ["-c", "dockerd-entrypoint.sh --insecure-registry=docker-registry:5000"]
     volumeMounts:
-      - name: docker-sock
-        mountPath: /var/run/docker.sock
+    - mountPath: /var/run/docker.sock
+      name: docker-socket-volume
   - image: dtzar/helm-kubectl:latest
     name: kubectl-deploy
     tty: true
   volumes:
-  - name: docker-sock
+  - name: docker-socket-volume
     hostPath:
       path: /var/run/docker.sock
-      type: Socket
+      type: File
