@@ -25,26 +25,26 @@ pipeline {
     }
 
     stages {
-        // stage('Build app image') {
-        //     // when {
-        //     //     allOf {expression{isPullRequest == true}}
-        //     // }
-        //     steps {
-        //         container('docker-builder'){
-        //             script {
-        //                 echo "Building Docker image: ${env.IMAGE_NAME}"
+        stage('Build app image') {
+            // when {
+            //     allOf {expression{isPullRequest == true}}
+            // }
+            steps {
+                container('docker-builder'){
+                    script {
+                        echo "Building Docker image: ${env.IMAGE_NAME}"
 
-        //                 def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+                        def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
-        //                 echo "Successfully built ${env.IMAGE_NAME}"
+                        echo "Successfully built ${env.IMAGE_NAME}"
 
-        //                 docker.withRegistry('http://docker-registry:5000') {
-        //                     docker.image("${env.IMAGE_NAME}").push()
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                        docker.withRegistry('http://docker-registry:5000') {
+                            docker.image("${env.IMAGE_NAME}").push()
+                        }
+                    }
+                }
+            }
+        }
         
         stage('Deploy to K8S'){
             steps{
