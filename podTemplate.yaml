@@ -13,7 +13,7 @@ spec:
       - name: DOCKER_TLS_CERTDIR
         value: "/certs"
     command: ["/bin/sh"]
-    args: ["-c", "dockerd-entrypoint.sh --insecure-registry=docker-registry:5000"]
+    args: ["-c", "dockerd-entrypoint.sh --insecure-registry=host.minikube.internal:5000"]
   - image: dtzar/helm-kubectl:latest
     name: kubectl-deploy
     tty: true
