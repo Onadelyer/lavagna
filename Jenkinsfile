@@ -65,7 +65,7 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
 
-                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER} --set db.username=${db_username} --set db.password=${db_password}"
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password}"
                             }
                         }
                     }
