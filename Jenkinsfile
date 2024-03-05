@@ -35,6 +35,7 @@ pipeline {
                         withCredentials([
                             [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
                             [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
+                                sh "echo ${db_username}"
                             }
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
