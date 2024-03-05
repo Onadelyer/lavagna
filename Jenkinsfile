@@ -32,6 +32,10 @@ pipeline {
             steps {
                 container('docker-builder'){
                     script {
+                        withCredentials([
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
+                            }
                         echo "Building Docker image: ${env.IMAGE_NAME}"
 
                         def builtImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
@@ -51,8 +55,8 @@ pipeline {
                 container('kubectl-deploy'){
                     script{
                         withCredentials([
-                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db-username'],
-                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db-password']]) {
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
 
                             withKubeConfig(caCertificate: '', clusterName: 'minikube', 
                                 contextName: 'minikube', 
@@ -60,7 +64,7 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
 
-                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER} --set db.username=${db-username} --set db.password=${db-password}"
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER} --set db.username=${db_username} --set db.password=${db_password}"
                             }
                         }
                     }
