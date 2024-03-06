@@ -78,7 +78,7 @@ pipeline {
                     }
                 }
                 stages {
-                    def getTestAgent("${TEST_PROFILE}")
+                    def getTestAgent(params.TEST_PROFILE)
                     stage('Test') {
                         agent {
                             kubernetes {
