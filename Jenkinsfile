@@ -78,13 +78,8 @@ pipeline {
                     }
                 }
                 stages {
-                    getTestAgent(TEST_PROFILE)
                     stage('Test') {
-                        agent {
-                            kubernetes {
-                                yamlFile 'podTemplate.test.yaml' 
-                            }
-                        }
+                        getTestAgent(TEST_PROFILE)
                         steps {
                             container('pod-test'){
                                 sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
