@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: app
+  namespace: "{{ (.Values.app).name}}-deployment"
 spec:
   ports:
     - port: 8080
@@ -12,6 +13,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app
+  namespace: "{{ (.Values.app).name}}-deployment"
 spec:
   selector:
     matchLabels:
@@ -23,7 +25,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: "localhost:5000/lavagna-build:{{ .Values.image.tag }}"
+          image: "localhost:5000/lavagna-build:latest"
           env:
             - name: DB_DIALECT
               value: PGSQL
