@@ -1,0 +1,8 @@
+metadata:
+  name: pod-test
+  namespace: jenkins
+spec:
+  containers:
+  - image: localhost:5000/lavagna-build:latest
+    name: test
+    tty: true
