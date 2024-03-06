@@ -79,7 +79,12 @@ pipeline {
                 }
                 stages {
                     stage('Test') {
-                        getTestAgent(TEST_PROFILE)
+                        agent {
+                            kubernetes {
+                                // Dynamically selecting the YAML based on TEST_PROFILE
+                                yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
+                            }
+                        }
                         steps {
                             container('pod-test'){
                                 sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
