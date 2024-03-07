@@ -40,9 +40,9 @@ pipeline {
 
     stages {
         stage('Build app image') {
-            when {
-                allOf {expression{isPullRequest == true}}
-            }
+            // when {
+            //     allOf {expression{isPullRequest == true}}
+            // }
             steps {
                 container('docker-builder'){
                     script {
