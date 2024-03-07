@@ -60,40 +60,40 @@ pipeline {
             }
         }
         
-        stage("All db tests") {
-            // when {
-            //     allOf {
-            //         anyOf {
-            //             expression { env.CHANGE_TARGET == 'main' }
-            //             expression { env.CHANGE_TARGET == 'qa' }
-            //         }
-            //         expression { isPullRequest == true }
-            //     }
-            // }
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_PROFILE"
-                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
-                    }
-                }
-                stages {
-                    stage('Test') {
-                        agent {
-                            kubernetes {
-                                // Dynamically selecting the YAML based on TEST_PROFILE
-                                yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
-                            }
-                        }
-                        steps {
-                            container('pod-test'){
-                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // stage("All db tests") {
+        //     // when {
+        //     //     allOf {
+        //     //         anyOf {
+        //     //             expression { env.CHANGE_TARGET == 'main' }
+        //     //             expression { env.CHANGE_TARGET == 'qa' }
+        //     //         }
+        //     //         expression { isPullRequest == true }
+        //     //     }
+        //     // }
+        //     matrix {
+        //         axes {
+        //             axis {
+        //                 name "TEST_PROFILE"
+        //                 values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
+        //             }
+        //         }
+        //         stages {
+        //             stage('Test') {
+        //                 agent {
+        //                     kubernetes {
+        //                         // Dynamically selecting the YAML based on TEST_PROFILE
+        //                         yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
+        //                     }
+        //                 }
+        //                 steps {
+        //                     container('pod-test'){
+        //                         sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Deploy to K8S'){
             // when {
