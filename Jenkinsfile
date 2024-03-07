@@ -95,29 +95,29 @@ pipeline {
             }
         }
 
-        // stage('Deploy to K8S'){
-        //     when {
-        //         allOf {expression{isPullRequest == false}}
-        //     }
-        //     steps{
-        //         container('kubectl-deploy'){
-        //             script{
-        //                 withCredentials([
-        //                     [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
-        //                     [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
+        stage('Deploy to K8S'){
+            // when {
+            //     allOf {expression{isPullRequest == false}}
+            // }
+            steps{
+                container('kubectl-deploy'){
+                    script{
+                        withCredentials([
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
 
-        //                     withKubeConfig(caCertificate: '', clusterName: 'minikube', 
-        //                         contextName: 'minikube', 
-        //                         credentialsId: 'kubernetes-token', 
-        //                         namespace: 'jenkins', 
-        //                         restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
+                            withKubeConfig(caCertificate: '', clusterName: 'minikube', 
+                                contextName: 'minikube', 
+                                credentialsId: 'kubernetes-token', 
+                                namespace: 'jenkins', 
+                                restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
 
-        //                         sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password},app.name=${environmentVar}"
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password},app.name=${environmentVar}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
