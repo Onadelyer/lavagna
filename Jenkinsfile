@@ -105,6 +105,17 @@ pipeline {
                         withCredentials([
                             [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
                             [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
+                            
+                            def yamlContent = [
+                                image: [tag: "${env.BUILD_NUMBER}"],
+                                db: [
+                                    username: "${db_username}",
+                                    password: "${db_password}"
+                                ],
+                                app: [name: "${environmentVar}"]
+                            ]
+
+                            writeYaml file: 'my-values.yaml', data: yamlContent
 
                             withKubeConfig(caCertificate: '', clusterName: 'minikube', 
                                 contextName: 'minikube', 
