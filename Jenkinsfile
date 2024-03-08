@@ -39,26 +39,26 @@ pipeline {
     }
 
     stages {
-        stage('Build app image') {
-            // when {
-            //     allOf {expression{isPullRequest == true}}
-            // }
-            steps {
-                container('docker-builder'){
-                    script {
-                        echo "Building Docker image: ${env.IMAGE_NAME}"
+        // stage('Build app image') {
+        //     // when {
+        //     //     allOf {expression{isPullRequest == true}}
+        //     // }
+        //     steps {
+        //         container('docker-builder'){
+        //             script {
+        //                 echo "Building Docker image: ${env.IMAGE_NAME}"
 
-                        docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+        //                 docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
-                        echo "Successfully built ${env.IMAGE_NAME}"
+        //                 echo "Successfully built ${env.IMAGE_NAME}"
 
-                        docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
-                            docker.image("${env.IMAGE_NAME}").push()
-                        }
-                    }
-                }
-            }
-        }
+        //                 docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
+        //                     docker.image("${env.IMAGE_NAME}").push()
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         
         // stage("All db tests") {
         //     // when {
