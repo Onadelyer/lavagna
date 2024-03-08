@@ -111,7 +111,10 @@ pipeline {
                                 credentialsId: 'kubernetes-token', 
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
-
+                                
+                                echo "DB Username is: ${db_username}".replaceAll(".", "*")
+                                echo "DB Password is: ${db_password}".replaceAll(".", "*")
+                                
                                 sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password},app.name=${environmentVar}"
                             }
                         }
