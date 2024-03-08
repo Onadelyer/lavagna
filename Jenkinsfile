@@ -103,8 +103,8 @@ pipeline {
                 container('kubectl-deploy'){
                     script{
                         withCredentials([
-                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_username'],
-                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-credentials', variable: 'db_password']]) {
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-user', variable: 'DB_USER'],
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-password', variable: 'DB_PASSWORD']]) {
                             
                             withKubeConfig(caCertificate: '', clusterName: 'minikube', 
                                 contextName: 'minikube', 
@@ -112,7 +112,7 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
 
-                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password},app.name=${environmentVar}"
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${DB_USER},db.password=${DB_PASSWORD},app.name=${environmentVar}"
                             }
                         }
                     }
