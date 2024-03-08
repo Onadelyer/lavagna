@@ -112,9 +112,12 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
                                 
-                                echo "DB Username is: ${db_username}".replaceAll(".", "*")
-                                echo "DB Password is: ${db_password}".replaceAll(".", "*")
-                                
+                                def maskedUsername = db_username.collect { it + "_" }.join()
+                                def maskedPassword = db_password.collect { it + "_" }.join()
+
+                                echo "Masked DB Username: ${maskedUsername}"
+                                echo "Masked DB Password: ${maskedPassword}"
+
                                 sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${db_username},db.password=${db_password},app.name=${environmentVar}"
                             }
                         }
