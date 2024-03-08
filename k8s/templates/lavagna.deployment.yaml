@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: "localhost:5000/lavagna-build:latest"
+          image: localhost:5000/lavagna-build:latest
           env:
             - name: DB_DIALECT
               value: PGSQL
