@@ -112,8 +112,8 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
                                 
-                                def maskedUsername = db_username.collect { it + "_" }.join()
-                                def maskedPassword = db_password.collect { it + "_" }.join()
+                                def maskedUsername = db_username.collect { it + '_' }.join('').init
+                                def maskedPassword = db_password.collect { it + '_' }.join('').init
 
                                 echo "Masked DB Username: ${maskedUsername}"
                                 echo "Masked DB Password: ${maskedPassword}"
