@@ -4,7 +4,7 @@ metadata:
   name: app-ingress
   namespace: "{{ (.Values.app).name}}-deployment"
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
@@ -15,4 +15,4 @@ spec:
           service:
             name: app
             port:
-              number: 8080
+              number: 80
