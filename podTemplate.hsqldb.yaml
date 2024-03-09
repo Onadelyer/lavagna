@@ -6,3 +6,8 @@ spec:
   - image: localhost:5000/lavagna-build:latest
     name: test
     tty: true
+    resources:
+      requests:
+        cpu: "500m"
+      limits:
+        cpu: "1000m"

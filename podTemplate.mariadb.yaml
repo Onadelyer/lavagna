@@ -6,6 +6,11 @@ spec:
   - image: localhost:5000/lavagna-build:latest
     name: test
     tty: true
+    resources:
+      requests:
+        cpu: "500m"
+      limits:
+        cpu: "1000m"
   - image: 10.26.0.176:5000/mariadb:10.1
     name: mariadb
     env:
