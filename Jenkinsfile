@@ -10,39 +10,20 @@ if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
     environmentVar = "main"
 }
 
-def getTestAgent(String testProfile){
-    if (testProfile == 'HSQLDB' || testProfile == 'PGSQL' || testProfile == 'MYSQL' || testProfile == 'MARIADB') {
-        return """
-        agent{
-            kubernetes {
-                yamlFile 'podTemplate.${testProfile.toLowerCase()}.yaml'
-            }
-        }
-        """
-    } else {
-        error "Unsupported test profile: ${testProfile}"
-    }
-}
-
 pipeline {
-
     agent {
         kubernetes {
-            yamlFile 'podTemplate.yaml' 
+            yamlFile 'podTemplate.yaml'
         }
     }
-
     environment {
-        REPO_URL = "https://github.com/Onadelyer/lavagna.git"
-        NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
         IMAGE_NAME = "lavagna-build"
     }
-
     stages {
         stage('Build app image') {
-            // when {
-            //     allOf {expression{isPullRequest == true}}
-            // }
+            when {
+                allOf {expression{isPullRequest == true}}
+            }
             steps {
                 container('docker-builder'){
                     script {
@@ -60,45 +41,44 @@ pipeline {
             }
         }
         
-        // stage("All db tests") {
-        //     // when {
-        //     //     allOf {
-        //     //         anyOf {
-        //     //             expression { env.CHANGE_TARGET == 'main' }
-        //     //             expression { env.CHANGE_TARGET == 'qa' }
-        //     //         }
-        //     //         expression { isPullRequest == true }
-        //     //     }
-        //     // }
-        //     matrix {
-        //         axes {
-        //             axis {
-        //                 name "TEST_PROFILE"
-        //                 values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
-        //             }
-        //         }
-        //         stages {
-        //             stage('Test') {
-        //                 agent {
-        //                     kubernetes {
-        //                         // Dynamically selecting the YAML based on TEST_PROFILE
-        //                         yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
-        //                     }
-        //                 }
-        //                 steps {
-        //                     container('pod-test'){
-        //                         sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage("All db tests") {
+            when {
+                allOf {
+                    anyOf {
+                        expression { env.CHANGE_TARGET == 'main' }
+                        expression { env.CHANGE_TARGET == 'qa' }
+                    }
+                    expression { isPullRequest == true }
+                }
+            }
+            matrix {
+                axes {
+                    axis {
+                        name "TEST_PROFILE"
+                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
+                    }
+                }
+                stages {
+                    stage('Test') {
+                        agent {
+                            kubernetes {
+                                yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
+                            }
+                        }
+                        steps {
+                            container('pod-test'){
+                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Deploy to K8S'){
-            // when {
-            //     allOf {expression{isPullRequest == false}}
-            // }
+            when {
+                allOf {expression{isPullRequest == false}}
+            }
             steps{
                 container('kubectl-deploy'){
                     script{
@@ -119,5 +99,6 @@ pipeline {
                 }
             }
         }
+        
     }
 }

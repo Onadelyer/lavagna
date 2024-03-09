@@ -6,3 +6,12 @@ spec:
   - image: localhost:5000/lavagna-build:latest
     name: test
     tty: true
+  - image: mysql:latest
+    name: mysql
+    env:
+    - name: MYSQL_ALLOW_EMPTY_PASSWORD
+      value: "yes"
+    - name: MYSQL_DATABASE
+      value: "lavagna"
+    - name: MYSQL_PASSWORD
+      value: "password"

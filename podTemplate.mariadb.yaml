@@ -6,3 +6,12 @@ spec:
   - image: localhost:5000/lavagna-build:latest
     name: test
     tty: true
+  - image: 10.26.0.176:5000/mariadb:10.1
+    name: mariadb
+    env:
+    - name: MYSQL_ALLOW_EMPTY_PASSWORD
+      value: "yes"
+    - name: MYSQL_DATABASE
+      value: "lavagna"
+    - name: MYSQL_PASSWORD
+      value: "password"
