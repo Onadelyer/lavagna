@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: registry.kube-system.svc.cluster.local:80/lavagna-build:latest
+          image: localhost:5000/lavagna-build
           env:
             - name: DB_DIALECT
               value: PGSQL
