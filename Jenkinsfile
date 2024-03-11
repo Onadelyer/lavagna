@@ -88,9 +88,9 @@ pipeline {
                             
                             withKubeConfig(caCertificate: '', clusterName: 'minikube', 
                                 contextName: 'minikube', 
-                                credentialsId: 'kubernetes-token', 
+                                credentialsId: 'kubernetes-serviceaccount', 
                                 namespace: 'jenkins', 
-                                restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
+                                restrictKubeConfigAccess: false, serverUrl: 'https://kubernetes.default.svc') {
 
                                 sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${DB_USER},db.password=${DB_PASSWORD},app.name=${environmentVar}"
                             }
