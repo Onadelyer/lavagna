@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dockercontainer
+  namespace: jenkins
+spec:
+  containers:
+  - image: docker:24.0.0-rc.1-dind
+    name: docker-builder
+    securityContext:  
+      privileged: true
+    env:
+      - name: DOCKER_TLS_CERTDIR
+        value: "/certs"
+    command: ["/bin/sh"]
+    args: ["-c", "dockerd-entrypoint.sh --insecure-registry=registry.kube-system.svc.cluster.local:80"]
+    resources:
+      requests:
+        cpu: "500m"
+      limits:
+        cpu: "1000m"
+  - image: dtzar/helm-kubectl:latest
+    name: kubectl-deploy
+    tty: true

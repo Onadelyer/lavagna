@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  namespace: jenkins
+spec:
+  containers:
+  - image: localhost:5000/lavagna-build:latest
+    name: pod-test
+    tty: true
+    resources:
+      requests:
+        cpu: "500m"
+      limits:
+        cpu: "1000m"
+  - image: mysql:latest
+    name: mysql
+    env:
+    - name: MYSQL_ALLOW_EMPTY_PASSWORD
+      value: "yes"
+    - name: MYSQL_DATABASE
+      value: "lavagna"
+    - name: MYSQL_PASSWORD
+      value: "password"

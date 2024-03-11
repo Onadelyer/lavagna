@@ -1,0 +1,4 @@
+FROM docker:latest
+
+RUN mkdir -p /etc/docker \
+ && echo "{ \"insecure-registries\":[\"10.26.0.176\"] }" > /etc/docker/daemon.json

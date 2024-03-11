@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  namespace: "{{ (.Values.app).name}}-deployment"
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: "{{ (.Values.app).name}}-deployment"
+spec:
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: localhost:5000/lavagna-build
+          env:
+            - name: DB_DIALECT
+              value: PGSQL
+            - name: DB_URL
+              value: jdbc:postgresql://postgresql:5432/lavagna
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+          ports:
+            - containerPort: 8080

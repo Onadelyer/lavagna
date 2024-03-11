@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  namespace: jenkins
+spec:
+  containers:
+  - image: localhost:5000/lavagna-build:latest
+    name: pod-test
+    tty: true
+    resources:
+      requests:
+        cpu: "500m"
+      limits:
+        cpu: "1000m"
+  - image: postgres:9.4
+    name: db
+    env:
+    - name: POSTGRES_DB
+      value: "lavagna"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: POSTGRES_PASSWORD
+      value: "password"
