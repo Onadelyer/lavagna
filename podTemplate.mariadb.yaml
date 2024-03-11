@@ -11,7 +11,7 @@ spec:
         cpu: "500m"
       limits:
         cpu: "1000m"
-  - image: 10.26.0.176:5000/mariadb:10.1
+  - image: mariadb:10.1
     name: mariadb
     env:
     - name: MYSQL_ALLOW_EMPTY_PASSWORD
