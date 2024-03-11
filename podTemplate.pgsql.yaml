@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - image: localhost:5000/lavagna-build:latest
-    name: app
+    name: pod-test
     tty: true
     resources:
       requests:
