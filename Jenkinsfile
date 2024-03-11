@@ -1,114 +1,104 @@
+//change id is not null only if it is a pull request
+def isPullRequest = env.CHANGE_ID != null
+
+def environmentVar
+if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
+    environmentVar = "dev"
+} else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
+    environmentVar = "qa"
+} else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
+    environmentVar = "main"
+}
+
 pipeline {
-    agent any
-    
-    environment {
-        NETWORK_NAME = "${env.JOB_NAME.toLowerCase().replace('/', '_')}_lavagna"
+    agent {
+        kubernetes {
+            yamlFile 'podTemplate.yaml'
+        }
     }
-
+    environment {
+        IMAGE_NAME = "lavagna-build"
+    }
     stages {
-        stage('Clear environment') {
+        stage('Build app image') {
+            when {
+                allOf {expression{isPullRequest == true}}
+            }
             steps {
-                sh 'chmod +x ./clear-environment.sh'
-                sh './clear-environment.sh'
+                container('docker-builder'){
+                    script {
+                        echo "Building Docker image: ${env.IMAGE_NAME}"
+
+                        docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+
+                        echo "Successfully built ${env.IMAGE_NAME}"
+
+                        docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
+                            docker.image("${env.IMAGE_NAME}").push()
+                        }
+                    }
+                }
             }
         }
-
-        // stage('Build app image'){
-        //     steps {
-        //         script{
-        //             docker.build("lavagna-build", "-f Dockerfile.build .")
-        //         }
-        //     }
-        // }
-
-        stage('Setup test databases'){
-            steps{
-                sh "echo ${JOB_NAME}"
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
+        
+        stage("All db tests") {
+            when {
+                allOf {
+                    anyOf {
+                        expression { env.CHANGE_TARGET == 'main' }
+                        expression { env.CHANGE_TARGET == 'qa' }
+                    }
+                    expression { isPullRequest == true }
+                }
             }
-        }
-
-        stage("Execute tests") {
             matrix {
                 axes {
                     axis {
                         name "TEST_PROFILE"
-                        values "HSQLDB", "PGSQL", "MYSQL", "MARIADB"
+                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
                     }
                 }
                 stages {
                     stage('Test') {
                         agent {
-                            docker {
-                                image 'maven:3.8.6-openjdk-8'
-                                args "--network ${NETWORK_NAME}"
+                            kubernetes {
+                                yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
                             }
                         }
                         steps {
-                            sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test --file pom.xml"
+                            container('pod-test'){
+                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
+                            }
                         }
                     }
                 }
             }
         }
 
-        stage('Down test databases'){
+        stage('Deploy to K8S'){
+            when {
+                allOf {expression{isPullRequest == false}}
+            }
             steps{
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker-compose.dbstart.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
+                container('kubectl-deploy'){
+                    script{
+                        withCredentials([
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-user', variable: 'DB_USER'],
+                            [$class: 'VaultStringCredentialBinding', credentialsId: 'vault-db-password', variable: 'DB_PASSWORD']]) {
+                            
+                            withKubeConfig(caCertificate: '', clusterName: 'minikube', 
+                                contextName: 'minikube', 
+                                credentialsId: 'kubernetes-token', 
+                                namespace: 'jenkins', 
+                                restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
+
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${DB_USER},db.password=${DB_PASSWORD},app.name=${environmentVar}"
+                            }
+                        }
+                    }
+                }
             }
         }
-
-
-        // stage('Build HSQLDB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //         }
-        //     }
-        //     steps {
-        //         checkout scm
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=HSQLDB -B package --file pom.xml'
-        //     }
-        // }
         
-        // stage('Build PGSQL 9.4') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=PGSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MYSQL') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MYSQL -B package --file pom.xml'
-        //     }
-        // }
-        
-        // stage('Build MARIADB') {
-        //     agent {
-        //         docker {
-        //             image 'maven:3.8.3-jdk-8'
-        //             args '--network lavagna-pipeline_lavagna --memory 4g'
-        //         }
-        //     }
-        //     steps {
-        //         sh 'mvn -v'
-        //         sh 'mvn -Ddatasource.dialect=MARIADB -B package --file pom.xml'
-        //     }
-        // }
     }
 }
