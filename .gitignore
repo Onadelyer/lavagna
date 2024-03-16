@@ -3,6 +3,7 @@
 .settings
 target
 node_modules
+.terraform
 
 # Intellij
 .idea/

@@ -1,7 +1,3 @@
-resource "aws_elastic_beanstalk_application" "beanstalk_application" {
-    name = "lavagna"
-}
-
 resource "aws_iam_instance_profile" "beanstalk_instance_profile" {
   name = "beanstalk-instance-profile"
   role = aws_iam_role.beanstalk_role.name
@@ -36,4 +32,5 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_environment" {
   application         = aws_elastic_beanstalk_application.beanstalk_application.name
   solution_stack_name = "64bit Amazon Linux 2 v3.6.4 running Corretto 8"
   description         = "Environment for Java8 application \"lavagna\""
+  instance_profile    = aws_iam_instance_profile.beanstalk_instance_profile.name
 }
