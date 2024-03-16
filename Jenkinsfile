@@ -1,19 +1,9 @@
-//change id is not null only if it is a pull request
 def isPullRequest = env.CHANGE_ID != null
-
-def environmentVar
-if (env.CHANGE_TARGET == "dev" || env.BRANCH_NAME == "dev") {
-    environmentVar = "dev"
-} else if (env.CHANGE_TARGET == "qa" || env.BRANCH_NAME == "qa") {
-    environmentVar = "qa"
-} else if (env.CHANGE_TARGET == "main" || env.BRANCH_NAME == "main") {
-    environmentVar = "main"
-}
 
 pipeline {
     agent {
         kubernetes {
-            yamlFile 'podTemplate.yaml'
+            yamlFile 'jenkins_agent_templates/podTemplate.yaml'
         }
     }
     environment {
@@ -62,7 +52,7 @@ pipeline {
                     stage('Test') {
                         agent {
                             kubernetes {
-                                yamlFile "podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
+                                yamlFile "jenkins_agent_templates/podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
                             }
                         }
                         steps {
@@ -92,7 +82,7 @@ pipeline {
                                 namespace: 'jenkins', 
                                 restrictKubeConfigAccess: false, serverUrl: 'https://kubernetes.default.svc') {
 
-                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${DB_USER},db.password=${DB_PASSWORD},app.name=${environmentVar}"
+                                sh "helm upgrade --install myapp ./k8s --set image.tag=${env.BUILD_NUMBER},db.username=${DB_USER},db.password=${DB_PASSWORD},app.name=${env.BRANCH_NAME}"
                             }
                         }
                     }
