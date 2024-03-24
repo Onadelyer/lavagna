@@ -7,104 +7,92 @@ terraform {
   }
 }
 
-provider "aws" {
-  access_key                  = "test"
-  secret_key                  = "test"
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  
-  region = "us-west-2"
+provider "aws" {  
+  region = "us-east-1"
+}
 
-  endpoints {
-    acm = "http://localhost:4566"
-    amplify = "http://localhost:4566"
-    apigateway = "http://localhost:4566"
-    apigatewayv2 = "http://localhost:4566"
-    appconfig = "http://localhost:4566"
-    applicationautoscaling = "http://localhost:4566"
-    appsync = "http://localhost:4566"
-    athena = "http://localhost:4566"
-    autoscaling = "http://localhost:4566"
-    backup = "http://localhost:4566"
-    batch = "http://localhost:4566"
-    cloudformation = "http://localhost:4566"
-    cloudfront = "http://localhost:4566"
-    cloudsearch = "http://localhost:4566"
-    cloudtrail = "http://localhost:4566"
-    cloudwatch = "http://localhost:4566"
-    cloudwatchlogs = "http://localhost:4566"
-    codecommit = "http://localhost:4566"
-    cognitoidentity = "http://localhost:4566"
-    cognitoidp = "http://localhost:4566"
-    config = "http://localhost:4566"
-    configservice = "http://localhost:4566"
-    costexplorer = "http://localhost:4566"
-    docdb = "http://localhost:4566"
-    dynamodb = "http://localhost:4566"
-    ec2 = "http://localhost:4566"
-    ecr = "http://localhost:4566"
-    ecs = "http://localhost:4566"
-    efs = "http://localhost:4566"
-    eks = "http://localhost:4566"
-    elasticache = "http://localhost:4566"
-    elasticbeanstalk = "http://localhost:4566"
-    elasticsearch = "http://localhost:4566"
-    elb = "http://localhost:4566"
-    elbv2 = "http://localhost:4566"
-    emr = "http://localhost:4566"
-    es = "http://localhost:4566"
-    events = "http://localhost:4566"
-    firehose = "http://localhost:4566"
-    fis = "http://localhost:4566"
-    glacier = "http://localhost:4566"
-    glue = "http://localhost:4566"
-    iam = "http://localhost:4566"
-    iot = "http://localhost:4566"
-    iotanalytics = "http://localhost:4566"
-    iotevents = "http://localhost:4566"
-    kafka = "http://localhost:4566"
-    kinesis = "http://localhost:4566"
-    kinesisanalytics = "http://localhost:4566"
-    kinesisanalyticsv2 = "http://localhost:4566"
-    kms = "http://localhost:4566"
-    lakeformation = "http://localhost:4566"
-    lambda = "http://localhost:4566"
-    mediaconvert = "http://localhost:4566"
-    mediastore = "http://localhost:4566"
-    mq = "http://localhost:4566"
-    mwaa = "http://mwaa.localhost.localstack.cloud:4566"
-    neptune = "http://localhost:4566"
-    opensearch = "http://localhost:4566"
-    organizations = "http://localhost:4566"
-    qldb = "http://localhost:4566"
-    rds = "http://localhost:4566"
-    redshift = "http://localhost:4566"
-    redshiftdata = "http://localhost:4566"
-    resourcegroups = "http://localhost:4566"
-    resourcegroupstaggingapi = "http://localhost:4566"
-    route53 = "http://localhost:4566"
-    route53resolver = "http://localhost:4566"
-    s3 = "http://s3.localhost.localstack.cloud:4566"
-    s3control = "http://localhost:4566"
-    sagemaker = "http://localhost:4566"
-    secretsmanager = "http://localhost:4566"
-    serverlessrepo = "http://localhost:4566"
-    servicediscovery = "http://localhost:4566"
-    ses = "http://localhost:4566"
-    sesv2 = "http://localhost:4566"
-    sns = "http://localhost:4566"
-    sqs = "http://localhost:4566"
-    ssm = "http://localhost:4566"
-    stepfunctions = "http://localhost:4566"
-    sts = "http://localhost:4566"
-    swf = "http://localhost:4566"
-    timestreamwrite = "http://localhost:4566"
-    transcribe = "http://localhost:4566"
-    transfer = "http://localhost:4566"
-    waf = "http://localhost:4566"
-    wafv2 = "http://localhost:4566"
-    xray = "http://localhost:4566"
- }
+#CREATING VPC, GATEWAY AND ROUTE TABLE FOR ALL SUBNETS
+resource "aws_vpc" "beanstalk_vpc" {
+  cidr_block = "10.0.0.0/16"
+
+  enable_dns_support = true
+  enable_dns_hostnames = true
+}
+
+resource "aws_internet_gateway" "beanstalk_igw" {
+  vpc_id = aws_vpc.beanstalk_vpc.id
+}
+
+resource "aws_route_table" "beanstalk_route_table" {
+  vpc_id = aws_vpc.beanstalk_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.beanstalk_igw.id
+  }
+}
+
+#CREATING SUBNETS AND UNION THEM IN GROUPS
+resource "aws_subnet" "beanstalk_subnet" {
+  vpc_id            = aws_vpc.beanstalk_vpc.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+}
+
+resource "aws_subnet" "beanstalk_subnet-2" {
+  vpc_id            = aws_vpc.beanstalk_vpc.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+}
+
+resource "aws_db_subnet_group" "lavagna-subnet-group" {
+  name = "lavagna-db-subnet-group"
+  subnet_ids = [ aws_subnet.beanstalk_subnet.id, aws_subnet.beanstalk_subnet-2.id]
+}
+
+resource "aws_route_table_association" "beanstalk_subnet_association" {
+  subnet_id      = aws_subnet.beanstalk_subnet.id
+  route_table_id = aws_route_table.beanstalk_route_table.id
+}
+
+resource "aws_security_group" "lavagna-security-group" {
+  name = "lavagna-security-group"
+  vpc_id = aws_vpc.beanstalk_vpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = -1
+    to_port = -1
+    protocol = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_elastic_beanstalk_application" "application" {  
@@ -118,23 +106,20 @@ data "archive_file" "bundle" {
   output_path = "bundle.zip"
 }
 
-# resource "aws_db_instance" "demobank_rds" {
-#   allocated_storage      = 20
-#   storage_type           = "gp2"
-#   engine                 = "mysql"
-#   engine_version         = "8.0"
-#   instance_class         = "db.t2.micro"
-#   identifier             = "javademoapp"
-#   db_name                = "demobank_db"
-#   username               = "admin"
-#   password               = "adminuser"
-#   parameter_group_name   = "default.mysql8.0"
-#   multi_az               = false
-#   publicly_accessible    = false
-#   skip_final_snapshot    = true
-#   db_subnet_group_name   = aws_db_subnet_group.demoapp_db_subnet_group.name
-#   vpc_security_group_ids = [aws_security_group.bank_app_rds_sg.id]
-# }
+resource "aws_db_instance" "demobank_rds_pgsql" {
+  identifier             = "lavagna-db"
+  db_name                = "lavagna"
+  instance_class         = "db.t3.micro"
+  allocated_storage      = 10
+  engine                 = "postgres"
+  engine_version         = "12.12"
+  skip_final_snapshot    = true
+  publicly_accessible    = true
+  db_subnet_group_name   = aws_db_subnet_group.lavagna-subnet-group.name
+  vpc_security_group_ids = [aws_security_group.lavagna-security-group.id]
+  username               = "myuser"
+  password               = "mypassword"
+}
 
 resource "aws_s3_bucket" "bucket" {
   bucket = "lavagna-app-bucket"
@@ -142,9 +127,8 @@ resource "aws_s3_bucket" "bucket" {
 
 resource "aws_s3_object" "bucket_object" {
   bucket = aws_s3_bucket.bucket.id
-  key    = "beanstalk/bundle.war"
+  key    = "beanstalk/bundle.zip"
   source = data.archive_file.bundle.output_path
-  # source = "./Build/lavagna-jetty-console.war"
 }
 
 resource "aws_elastic_beanstalk_application_version" "name" {
@@ -172,23 +156,63 @@ resource "aws_elastic_beanstalk_environment" "name" {
   }
 
   setting {
-    namespace = "aws:elb:listener:8080"
-    name      = "ListenerProtocol"
-    value     = "HTTP"
+    name      = "AssociatePublicIpAddress"
+    namespace = "aws:ec2:vpc"
+    value     = "True"
   }
+
   setting {
-    namespace = "aws:elb:listener:8080"
-    name      = "InstancePort"
-    value     = "8080"
+    namespace = "aws:ec2:vpc"
+    name      = "VPCId"
+    value     = aws_vpc.beanstalk_vpc.id
   }
+
   setting {
-    namespace = "aws:elb:listener:8080"
-    name      = "InstanceProtocol"
-    value     = "HTTP"
+    namespace = "aws:ec2:vpc"
+    name      = "Subnets"
+    value     = aws_subnet.beanstalk_subnet.id
   }
+
   setting {
-    namespace = "aws:elb:listener:8080"
-    name      = "ListenerEnabled"
-    value     = "true"
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "SecurityGroups"
+    value     = aws_security_group.lavagna-security-group.id
+  }
+
+  # Environment variables
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "datasource.dialect"
+    value     = "PGSQL"
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "datasource.url"
+    value     = "jdbc:postgresql://${aws_db_instance.demobank_rds_pgsql.address}:5432/${aws_db_instance.demobank_rds_pgsql.db_name}"
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "datasource.username"
+    value     = aws_db_instance.demobank_rds_pgsql.username
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "datasource.password"
+    value     = aws_db_instance.demobank_rds_pgsql.password
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "spring.profile.active"
+    value     = "dev"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "EC2KeyName"
+    value     = "test-key-pair"
   }
 }
