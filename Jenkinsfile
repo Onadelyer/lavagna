@@ -21,6 +21,8 @@ pipeline {
 
                         buildImage.inside('-v $WORKSPACE:/output -u root'){
                             sh 'ls'
+                            sh 'ls /app/target'
+
                         }
                         // docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
                         //     docker.image("${env.IMAGE_NAME}").push()
