@@ -94,14 +94,15 @@ pipeline {
                 container('aws-deploy'){
                     script{
                         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        credentialsld: "aws-credentials", secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])
+                        credentialsld: "aws-credentials", secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]){
+                            sh 'zip -r bundle.zip terraform/Build'
+
+                            sh 'aws s3 cp bundle.zip s3://lavagna-bucket/beanstalk/bundle.zip --sse'
+
+                            sh 'aws elasticbeanstalk create-application-version --application-name lavagna --version-label new-version-1 --source-bundle S3Bucket=lavagna-bucket,S3Key=beanstalk/bundle.zip'
+                            sh 'aws elasticbeanstalk update-environment --environment-name lavagna-env --version-label new-version-1'
+                        }
                         
-                        sh 'zip -r bundle.zip terraform/Build'
-
-                        sh 'aws s3 cp bundle.zip s3://lavagna-bucket/beanstalk/bundle.zip --sse'
-
-                        sh 'aws elasticbeanstalk create-application-version --application-name lavagna --version-label new-version-1 --source-bundle S3Bucket=lavagna-bucket,S3Key=beanstalk/bundle.zip'
-                        sh 'aws elasticbeanstalk update-environment --environment-name lavagna-env --version-label new-version-1'
                     }
                 }
             }
