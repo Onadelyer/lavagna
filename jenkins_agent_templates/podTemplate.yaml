@@ -17,3 +17,6 @@ spec:
   - image: dtzar/helm-kubectl:latest
     name: kubectl-deploy
     tty: true
+  - image: amazon/aws-cli:2.13.2
+    name: aws-deploy
+    tty: true

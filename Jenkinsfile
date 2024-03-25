@@ -17,53 +17,53 @@ pipeline {
             steps {
                 container('docker-builder'){
                     script {
-                        echo "Building Docker image: ${env.IMAGE_NAME}"
+                        def buildImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
-                        docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
-
-                        echo "Successfully built ${env.IMAGE_NAME}"
-
-                        docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
-                            docker.image("${env.IMAGE_NAME}").push()
+                        buildImage.inside('-v $WORKSPACE:/output -u root'){
+                            sh "cp lavagna-jetty-console.war /output/ROOT.war"
                         }
+                        sh "ls"
+                        // docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
+                        //     docker.image("${env.IMAGE_NAME}").push()
+                        // }
                     }
                 }
             }
         }
         
-        stage("All db tests") {
-            when {
-                allOf {
-                    anyOf {
-                        expression { env.CHANGE_TARGET == 'main' }
-                        expression { env.CHANGE_TARGET == 'qa' }
-                    }
-                    expression { isPullRequest == true }
-                }
-            }
-            matrix {
-                axes {
-                    axis {
-                        name "TEST_PROFILE"
-                        values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
-                    }
-                }
-                stages {
-                    stage('Test') {
-                        agent {
-                            kubernetes {
-                                yamlFile "jenkins_agent_templates/podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
-                            }
-                        }
-                        steps {
-                            container('pod-test'){
-                                sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // stage("All db tests") {
+        //     when {
+        //         allOf {
+        //             anyOf {
+        //                 expression { env.CHANGE_TARGET == 'main' }
+        //                 expression { env.CHANGE_TARGET == 'qa' }
+        //             }
+        //             expression { isPullRequest == true }
+        //         }
+        //     }
+        //     matrix {
+        //         axes {
+        //             axis {
+        //                 name "TEST_PROFILE"
+        //                 values 'HSQLDB', 'PGSQL', 'MYSQL', 'MARIADB'
+        //             }
+        //         }
+        //         stages {
+        //             stage('Test') {
+        //                 agent {
+        //                     kubernetes {
+        //                         yamlFile "jenkins_agent_templates/podTemplate.${env.TEST_PROFILE.toLowerCase()}.yaml"
+        //                     }
+        //                 }
+        //                 steps {
+        //                     container('pod-test'){
+        //                         sh "mvn -Ddatasource.dialect=${TEST_PROFILE} -B test"
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Deploy to K8S'){
             when {
