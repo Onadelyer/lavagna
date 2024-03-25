@@ -20,11 +20,8 @@ pipeline {
                         def buildImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
                         buildImage.inside('-v $WORKSPACE:/output -u root'){
-                            sh 'cd /app/target'
-                            sh 'ls'
-                            sh 'cp lavagna-jetty-console.war /output/ROOT.war'
+                            sh 'mvn --version'
                         }
-                        sh "ls"
                         // docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
                         //     docker.image("${env.IMAGE_NAME}").push()
                         // }
