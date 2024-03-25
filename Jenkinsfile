@@ -20,6 +20,8 @@ pipeline {
                         def buildImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
                         buildImage.inside('-v $WORKSPACE:/output -u root'){
+                            sh "pwd"
+                            sh "ls"
                             sh "cp lavagna-jetty-console.war /output/ROOT.war"
                         }
                         sh "ls"
