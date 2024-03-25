@@ -22,7 +22,7 @@ pipeline {
                         buildImage.inside('-v $WORKSPACE:/output -u root'){
                             sh 'pwd'
                             sh 'ls'
-                            sh 'cp lavagna-jetty-console.war /output/ROOT.war'
+                            sh 'cp /app/targetavagna-jetty-console.war /output/ROOT.war'
                         }
                         sh "ls"
                         // docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
