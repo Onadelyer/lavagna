@@ -17,11 +17,8 @@ pipeline {
             steps {
                 container('docker-builder'){
                     script {
-                        def buildImage = docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
+                        docker.build("${env.IMAGE_NAME}", "-f Dockerfile.build .")
 
-                        buildImage.inside('-v $WORKSPACE:/output -u root'){
-                            sh 'cp /app/target/lavagna-jetty-console.war /output/terraform/Build/ROOT.war'
-                        }
                         // docker.withRegistry('http://registry.kube-system.svc.cluster.local:80') {
                         //     docker.image("${env.IMAGE_NAME}").push()
                         // }
