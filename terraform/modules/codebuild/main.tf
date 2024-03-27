@@ -3,6 +3,8 @@ resource "aws_codebuild_project" "name" {
   build_timeout = 15
   service_role  = "arn:aws:iam::536460581283:role/service-role/cwe-role-us-east-1-devops-pipeline"
 
+  source_version = "test"
+
   source {
     type            = "GITHUB"
     location        = "https://github.com/Onadelyer/lavagna"
