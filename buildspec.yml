@@ -6,4 +6,4 @@ phases:
       - mvn package -DskipTests
 artifacts:
   files:
-    - target/lavagna-jetty-console.jar
+    - target/lavagna-jetty-console.war
