@@ -18,9 +18,9 @@ variable "bucket" {
   type = string
 }
 
-variable "bucket-key"{
-  type = string
-}
+# variable "bucket-key"{
+#   type = string
+# }
 
 variable "rds-endpoint"{
   type = string

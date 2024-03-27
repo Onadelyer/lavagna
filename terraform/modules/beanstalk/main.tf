@@ -3,18 +3,10 @@ resource "aws_elastic_beanstalk_application" "application" {
   description = "Java 8 application \"lavagna\""
 }
 
-resource "aws_elastic_beanstalk_application_version" "name" {
-  name        = "test-version"
-  application = aws_elastic_beanstalk_application.application.name
-  bucket      = var.bucket
-  key         = var.bucket-key
-}
-
 resource "aws_elastic_beanstalk_environment" "name" {
   name                = "lavagna-env"
   application         = aws_elastic_beanstalk_application.application.name
   solution_stack_name = "64bit Amazon Linux 2 v4.4.1 running Tomcat 9 Corretto 8"
-  version_label = aws_elastic_beanstalk_application_version.name.name
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"

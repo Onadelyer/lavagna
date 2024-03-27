@@ -11,17 +11,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "archive_file" "bundle" {
-  type        = "zip"
-  source_dir  = "./Build"
-  output_path = "bundle.zip"
-}
+# data "archive_file" "bundle" {
+#   type        = "zip"
+#   source_dir  = "./Build"
+#   output_path = "bundle.zip"
+# }
 
 module "s3"{
   source = "./modules/s3"
   bucket-name = "lavagna-bucket"
-  key = "beanstalk/bundle.zip"
-  bucket-source = data.archive_file.bundle.output_path
+  # key = "beanstalk/bundle.zip"
+  # bucket-source = data.archive_file.bundle.output_path
 }
 
 module "vpc" {
@@ -47,9 +47,13 @@ module "beanstalk"{
   lb-security-group = module.sg.elb-security-group-id
   beanstalk-instance-sg = module.sg.instance-security-group-id
   bucket = module.s3.bucket
-  bucket-key = module.s3.bucket-key
+  #bucket-key = module.s3.bucket-key
   rds-db-name = module.rds.db-name
   rds-db-password = module.rds.password
   rds-db-username = module.rds.username
   rds-endpoint = module.rds.rds-instance-endpoint
+}
+
+module "codebuild" {
+  source = "./modules/codebuild"
 }
