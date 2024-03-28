@@ -28,7 +28,7 @@ resource "aws_codebuild_project" "name" {
 
   logs_config {
     cloudwatch_logs {
-      status = "DISABLED"
+      status = "ENABLED"
     }
   }
 }
