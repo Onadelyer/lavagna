@@ -5,7 +5,7 @@ phases:
       - echo Build started on `date`
       - mvn package -DskipTests
       - mv target/lavagna-jetty-console.war terraform/Build/ROOT.war
-      - cd terraform/Build/
 artifacts:
   files:
     - ROOT.war
+  base-directory: terraform/Build
